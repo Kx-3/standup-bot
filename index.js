@@ -14,9 +14,7 @@ const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
 });
 
-app.command("/standup", async ({ body, ack, client }) => {
-  await ack();
-  const slackTeamId = body.team_id;
+async function openStandupModal(client, trigger_id, slackTeamId, slackUserId) {
   let team = await prisma.team.upsert({
     where: { slackTeamId },
     update: {},
@@ -27,9 +25,9 @@ app.command("/standup", async ({ body, ack, client }) => {
     },
   });
   let user = await prisma.user.upsert({
-    where: { slackUserId: body.user_id },
+    where: { slackUserId },
     update: {},
-    create: { slackUserId: body.user_id, teamId: team.id },
+    create: { slackUserId, teamId: team.id },
   });
   const tz = team.timezone || process.env.DEFAULT_TEAM_TZ;
   const todayTz = dayjs().tz?.(tz) ?? dayjs(); // if no tz plugin, assume server tz
@@ -37,14 +35,14 @@ app.command("/standup", async ({ body, ack, client }) => {
   const yDateUTC = yDateLocal.utc();
   const yEntry = await prisma.standupEntry.findFirst({
     where: {
-      userId: user.id,
+      userId: slackUserId,
       date: { gte: yDateUTC.toDate(), lt: yDateUTC.add(1, "day").toDate() },
     },
     orderBy: { createdAt: "desc" },
   });
   const yesterdayPrefill = yEntry?.today || "";
   await client.views.open({
-    trigger_id: body.trigger_id,
+    trigger_id,
     view: {
       type: "modal",
       callback_id: "submit_standup",
@@ -98,6 +96,11 @@ app.command("/standup", async ({ body, ack, client }) => {
       ],
     },
   });
+}
+
+app.command("/standup", async ({ body, ack, client }) => {
+  await ack();
+  openStandupModal(client, body.trigger_id, body.team_id, body.user_id);
 });
 
 app.view("submit_standup", async ({ ack, body, view, client }) => {
@@ -183,6 +186,57 @@ app.view("submit_standup", async ({ ack, body, view, client }) => {
       },
     ],
   });
+});
+
+cron.schedule("* * * * *", async () => {
+  console.log("⏰ Sending daily stand-up reminders...");
+  const teams = await prisma.team.findMany();
+  for (const team of teams) {
+    const users = await prisma.user.findMany({ where: { teamId: team.id } });
+
+    for (const user of users) {
+      try {
+        await app.client.chat.postMessage({
+          token: process.env.SLACK_BOT_TOKEN,
+          channel: user.slackUserId,
+          text: "👋 Good morning! Time for your daily stand-up. Use `/standup` to fill it in or click below:",
+          blocks: [
+            {
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: "👋 Good morning! Time for your daily stand-up. ",
+              },
+            },
+            {
+              type: "actions",
+              elements: [
+                {
+                  type: "button",
+                  text: {
+                    type: "plain_text",
+                    text: "Start Stand-up",
+                  },
+                  action_id: "open_standup",
+                  value: "start",
+                },
+              ],
+            },
+          ],
+        });
+      } catch (error) {
+        console.error(
+          `Failed to send reminder to user ${user.slackUserId}:`,
+          error
+        );
+      }
+    }
+  }
+})
+
+app.action("open_standup", async ({ body, ack, client }) => {
+    await ack();
+    openStandupModal(client, body.trigger_id, body.team.id, body.user.id);
 });
 
 (async () => {
