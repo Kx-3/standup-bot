@@ -188,7 +188,7 @@ app.view("submit_standup", async ({ ack, body, view, client }) => {
   });
 });
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 9 * * *", async () => {
   console.log("⏰ Sending daily stand-up reminders...");
   const teams = await prisma.team.findMany();
   for (const team of teams) {
