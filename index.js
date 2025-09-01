@@ -234,6 +234,77 @@ cron.schedule("0 9 * * *", async () => {
   }
 })
 
+cron.schedule("0 19 * * *", async () => {
+  console.log("⏰ Running daily stand-up summary...");
+
+  const todayUTC = dayjs().utc().startOf("day");
+  const tomorrowUTC = todayUTC.add(1, "day");
+
+  const entries = await prisma.standupEntry.findMany({
+    where: {
+      date: {
+        gte: todayUTC.toDate(),
+        lt: tomorrowUTC.toDate(),
+      },
+    },
+    include: { user: true },
+  });
+  if (entries.length === 0) {
+    await app.client.chat.postMessage({
+        channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
+        text: "No stand-up entries were submitted today.",
+    });
+    return;
+  }
+
+  const summaryBlocks = [];
+  for (const entry of entries) {
+    summaryBlocks.push(
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*<@${entry.user.slackUserId}>*`,
+        },
+      },
+      {
+        type: "section",
+        fields: [
+            {
+                type: "mrkdwn",
+                text: `*Yesterday:*\n${entry.yesterday || "-"}`,
+            },
+            {
+                type: "mrkdwn",
+                text: `*Today:*\n${entry.today || "-"}`,
+            },
+            {
+                type: "mrkdwn",
+                text: `*Blockers:*\n${entry.blockers || "-"}`,
+            },
+        ]
+      },
+      { type: "divider" }
+    );
+  }
+
+  await app.client.chat.postMessage({
+    channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
+    text: "📊 Daily Stand-up Summary",
+    blocks: [
+      {
+        type: "header",
+        text: {
+          type: "plain_text",
+          text: ":📊 Daily Stand-up Summary",
+          emoji: true,
+        },
+      },
+      ...summaryBlocks,
+    ],
+  });
+})
+
 app.action("open_standup", async ({ body, ack, client }) => {
     await ack();
     openStandupModal(client, body.trigger_id, body.team.id, body.user.id);
