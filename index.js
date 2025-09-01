@@ -1,6 +1,6 @@
 require("dotenv").config();
 const { App } = require("@slack/bolt");
-const { PrismaClient } = require("./generated/prisma");
+const { PrismaClient } = require("@prisma/client");
 const express = require("express");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
