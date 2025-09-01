@@ -234,7 +234,7 @@ cron.schedule("0 9 * * *", async () => {
   }
 })
 
-cron.schedule("/2 * * * *", async () => {
+cron.schedule("* * * * *", async () => {
   console.log("⏰ Running daily stand-up summary...");
 
   const todayUTC = dayjs().utc().startOf("day");
