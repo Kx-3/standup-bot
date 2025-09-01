@@ -232,7 +232,7 @@ cron.schedule("0 9 * * *", async () => {
       }
     }
   }
-})
+});
 
 cron.schedule("* * * * *", async () => {
   console.log("⏰ Running daily stand-up summary...");
@@ -251,8 +251,8 @@ cron.schedule("* * * * *", async () => {
   });
   if (entries.length === 0) {
     await app.client.chat.postMessage({
-        channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
-        text: "No stand-up entries were submitted today.",
+      channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
+      text: "No stand-up entries were submitted today.",
     });
     return;
   }
@@ -268,21 +268,34 @@ cron.schedule("* * * * *", async () => {
         },
       },
       {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: `Streak: *${entry.user.streak || 0}*`,
+          },
+        ],
+      },
+      {
         type: "section",
-        fields: [
-            {
-                type: "mrkdwn",
-                text: `*Yesterday:*\n${entry.yesterday || "-"}`,
-            },
-            {
-                type: "mrkdwn",
-                text: `*Today:*\n${entry.today || "-"}`,
-            },
-            {
-                type: "mrkdwn",
-                text: `*Blockers:*\n${entry.blockers || "-"}`,
-            },
-        ]
+        text: {
+          type: "mrkdwn",
+          text: `*Yesterday:*\n${entry.yesterday || "-"}`,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Today:*\n${entry.today || "-"}`,
+        },
+      },
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Blockers:*\n${entry.blockers || "-"}`,
+        },
       },
       { type: "divider" }
     );
@@ -296,18 +309,18 @@ cron.schedule("* * * * *", async () => {
         type: "header",
         text: {
           type: "plain_text",
-          text: ":📊 Daily Stand-up Summary",
+          text: "📊 Daily Stand-up Summary",
           emoji: true,
         },
       },
       ...summaryBlocks,
     ],
   });
-})
+});
 
 app.action("open_standup", async ({ body, ack, client }) => {
-    await ack();
-    openStandupModal(client, body.trigger_id, body.team.id, body.user.id);
+  await ack();
+  openStandupModal(client, body.trigger_id, body.team.id, body.user.id);
 });
 
 (async () => {
