@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Team {
+  id          String   @id @default(cuid())
+  slackTeamId String   @unique
+  name        String?
+  timezone    String   @default("Africa/Nairobi")
+  channelId   String?  // default channel for digests
+  users       User[]
+  entries     StandupEntry[]
+  createdAt   DateTime @default(now())
+}
+
+model User {
+  id          String   @id @default(cuid())
+  slackUserId String   @unique
+  realName    String?
+  displayName String?
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id])
+  streak      Int      @default(0)
+  lastSubmit  DateTime?
+  entries     StandupEntry[]
+}
+
+model StandupEntry {
+  id          String   @id @default(cuid())
+  date        DateTime // store as midnight team tz (normalized to UTC)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  teamId      String
+  team        Team     @relation(fields: [teamId], references: [id])
+  yesterday   String
+  today       String
+  blockers    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ParticipationSnapshot {
+  id       String   @id @default(cuid())
+  weekOf   DateTime // Monday 00:00 team tz (UTC normalized)
+  teamId   String
+  filled   Int
+  missing  Int
+  streakLeaders Json // [{userId, name, streak}]
+  blockersTop    Json // [{term, count}]
+  createdAt DateTime @default(now())
+}
