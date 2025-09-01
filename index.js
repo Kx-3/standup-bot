@@ -100,6 +100,91 @@ app.command("/standup", async ({ body, ack, client }) => {
   });
 });
 
+app.view("submit_standup", async ({ ack, body, view, client }) => {
+  await ack();
+  const slackTeamId = body.team.id;
+  const slackUserId = body.user.id;
+
+  const team = await prisma.team.findUnique({
+    where: { slackTeamId },
+  });
+  const user = await prisma.user.upsert({
+    where: { slackUserId },
+    update: {},
+    create: { slackUserId, teamId: team.id },
+  });
+
+  const tz = team.timezone || process.env.DEFAULT_TEAM_TZ;
+  const dateLocal = dayjs().tz?.(tz) ?? dayjs(); // if no tz plugin, assume server tz
+  const dateStartUTC = dateLocal.startOf("day").utc().toDate();
+
+  const y = view.state.values["y"]["y_i"].value.trim();
+  const t = view.state.values["t"]["t_i"].value.trim();
+  const b = view.state.values["b"]?.["b_i"]?.value.trim() || "";
+
+  await prisma.standupEntry.upsert({
+    where: {
+      id: await (async () => {
+        const existing = prisma.standupEntry.findFirst({
+          where: {
+            userId: user.id,
+            date: {
+              gte: dateStartUTC,
+              lt: dayjs(dateStartUTC).add(1, "day").toDate(),
+            },
+          },
+        });
+        return existing?.id || "new";
+      })(),
+    },
+    update: { today: t, yesterday: y, blockers: b },
+    create: {
+      userId: user.id,
+      teamId: team.id,
+      date: dateStartUTC,
+      today: t,
+      yesterday: y,
+      blockers: b,
+    },
+  });
+
+  const last = user.lastSubmit ? dayjs(user.lastSubmit) : null;
+  const isNew = !last || !dayjs(last).isSame(dateStartUTC, "day");
+  let newStreak = user.streak;
+  if (isNew) {
+    if (
+      last &&
+      dayjs(last).add(1, "day").startOf("day").isSame(dateStartUTC, "day")
+    )
+      newStreak += 1;
+    else newStreak = 1;
+  }
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { lastSubmit: dateStartUTC, streak: newStreak },
+  });
+
+  await client.chat.postMessage({
+    channel: slackUserId,
+    text: `Stand-up submitted ✅`,
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `*Stand-up submitted* ✅\n*Yesterday:* ${y || "-"}\n*Today:* ${
+            t || "-"
+          }\n*Blockers:* ${b || "-"}`,
+        },
+      },
+      {
+        type: "context",
+        elements: [{ type: "mrkdwn", text: `Streak: *${newStreak}*` }],
+      },
+    ],
+  });
+});
+
 (async () => {
   await app.start(process.env.PORT || 3000);
   console.log("⚡️ Slack Bolt app is running!");
