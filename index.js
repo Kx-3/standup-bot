@@ -14,6 +14,48 @@ const prisma = new PrismaClient();
 const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   token: process.env.SLACK_BOT_TOKEN,
+  customRoutes: [
+    {
+      path: "/health",
+      method: ["GET"],
+      handler: (req, res) => res.send("OK"),
+    },
+    {
+        path: "/analytics/participation.csv",
+        method: ["GET"],
+        handler: async (req, res) => {
+          const teamId = req.query.teamId;
+          const users = await prisma.user.findMany({
+            where: { teamId },
+          });
+          const end = dayjs().utc().startOf("day");
+          const start = end.subtract(30, "day");
+      
+          const entries = await prisma.standupEntry.findMany({
+            where: {
+              teamId,
+              date: {
+                gte: start.toDate(),
+                lt: end.toDate(),
+              },
+            },
+          });
+          const byUser = new Map(users.map((u) => [u.id, 0]));
+          for (const e of entries) {
+            byUser.set(e.userId, (byUser.get(e.userId) || 0) + 1);
+          }
+      
+          const rows = ["user, submissions_30d, participation_rate_30d"];
+          for (const u of users) {
+            const subs = byUser.get(u.id) || 0;
+            const rate = ((subs / 30) * 100).toFixed(1);
+            rows.push(`${u.slackUserId}, ${subs}, ${rate}%`);
+          }
+          res.set("Content-Type", "text/csv");
+          res.send(rows.join("\n"));
+        },
+    }
+  ],
 });
 
 async function openStandupModal(client, trigger_id, slackTeamId, slackUserId) {
@@ -372,42 +414,7 @@ app.command("/participation", async ({ body, ack, client }) => {
   });
 });
 
-const web = express();
-web.get("/health", (req, res) => res.send("OK"));
-web.get("/analytics/participation.csv", async (req, res) => {
-  const teamId = req.query.teamId;
-  const users = await prisma.user.findMany({
-    where: { teamId },
-  });
-  const end = dayjs().utc().startOf("day");
-  const start = end.subtract(30, "day");
-
-  const entries = await prisma.standupEntry.findMany({
-    where: {
-      teamId,
-      date: {
-        gte: start.toDate(),
-        lt: end.toDate(),
-      },
-    },
-  });
-  const byUser = new Map(users.map((u) => [u.id, 0]));
-  for (const e of entries) {
-    byUser.set(e.userId, (byUser.get(e.userId) || 0) + 1);
-  }
-
-  const rows = ["user, submissions_30d, participation_rate_30d"];
-  for (const u of users) {
-    const subs = byUser.get(u.id) || 0;
-    const rate = ((subs / 30) * 100).toFixed(1);
-    rows.push(`${u.slackUserId}, ${subs}, ${rate}%`);
-  }
-  res.set("Content-Type", "text/csv");
-  res.send(rows.join("\n"));
-});
-
 (async () => {
   await app.start(process.env.PORT || 3000);
-  app.receiver.app.use(web)
   console.log("⚡️ Slack Bolt app is running!");
 })();
