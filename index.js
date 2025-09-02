@@ -4,6 +4,8 @@ const { PrismaClient } = require("./generated/prisma");
 const express = require("express");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
+dayjs.extend(timezone);
 dayjs.extend(utc);
 const cron = require("node-cron");
 const { timeAt } = require("tz-offset");
@@ -35,7 +37,7 @@ async function openStandupModal(client, trigger_id, slackTeamId, slackUserId) {
   const yDateUTC = yDateLocal.utc();
   const yEntry = await prisma.standupEntry.findFirst({
     where: {
-      userId: slackUserId,
+      userId: user.id,
       date: { gte: yDateUTC.toDate(), lt: yDateUTC.add(1, "day").toDate() },
     },
     orderBy: { createdAt: "desc" },
@@ -128,7 +130,7 @@ app.view("submit_standup", async ({ ack, body, view, client }) => {
   await prisma.standupEntry.upsert({
     where: {
       id: await (async () => {
-        const existing = prisma.standupEntry.findFirst({
+        const existing = await prisma.standupEntry.findFirst({
           where: {
             userId: user.id,
             date: {
@@ -406,10 +408,6 @@ web.get("/analytics/participation.csv", async (req, res) => {
 
 (async () => {
   await app.start(process.env.PORT || 3000);
-  web.listen(process.env.PORT || 3000, () => {
-    console.log(
-      `🌐 Web server running on port ${(process.env.PORT || 3000)} (http://localhost:${(process.env.PORT || 3000)}/health)`
-    );
-  });
+  app.receiver.app.use(web)
   console.log("⚡️ Slack Bolt app is running!");
 })();
