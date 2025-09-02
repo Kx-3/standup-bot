@@ -406,6 +406,10 @@ web.get("/analytics/participation.csv", async (req, res) => {
 
 (async () => {
   await app.start(process.env.PORT || 3000);
-  web.listen((process.env.PORT || 3000) + 1, () => {});
+  web.listen(process.env.PORT || 3000, () => {
+    console.log(
+      `🌐 Web server running on port ${(process.env.PORT || 3000)} (http://localhost:${(process.env.PORT || 3000)}/health)`
+    );
+  });
   console.log("⚡️ Slack Bolt app is running!");
 })();
