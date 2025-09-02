@@ -234,7 +234,7 @@ cron.schedule("0 9 * * *", async () => {
   }
 });
 
-cron.schedule("* * * * *", async () => {
+cron.schedule("0 17 * * *", async () => {
   console.log("⏰ Running daily stand-up summary...");
 
   const todayUTC = dayjs().utc().startOf("day");
@@ -321,6 +321,87 @@ cron.schedule("* * * * *", async () => {
 app.action("open_standup", async ({ body, ack, client }) => {
   await ack();
   openStandupModal(client, body.trigger_id, body.team.id, body.user.id);
+});
+
+app.command("/participation", async ({ body, ack, client }) => {
+  await ack();
+  const slackTeamId = body.team_id;
+  const days = parseInt(body.text) || 30;
+  const team = await prisma.team.findUnique({
+    where: { slackTeamId },
+  });
+  if (!team) {
+    await client.chat.postEphemeral({
+      channel: body.channel_id,
+      user: body.user_id,
+      text: "Team not found in the database.",
+    });
+    return;
+  }
+
+  const users = await prisma.user.findMany({
+    where: { teamId: team.id },
+  });
+  const end = dayjs().utc().startOf("day");
+  const start = end.subtract(days, "day");
+
+  const entries = await prisma.standupEntry.findMany({
+    where: {
+      teamId: team.id,
+      date: {
+        gte: start.toDate(),
+        lt: end.toDate(),
+      },
+    },
+  });
+  const byUser = new Map(users.map((u) => [u.id, 0]));
+  for (const e of entries) {
+    byUser.set(e.userId, (byUser.get(e.userId) || 0) + 1);
+  }
+  let report = `*Stand-up Participation Report (Last ${days} days)*\n`;
+  for (const u of users) {
+    const subs = byUser.get(u.id) || 0;
+    const rate = ((subs / days) * 100).toFixed(1);
+    report += `<@${u.slackUserId}>: ${subs} submissions (${rate}%)\n`;
+  }
+  await client.chat.postMessage({
+    channel: body.channel_id,
+    text: report,
+  });
+});
+
+const web = express();
+web.get("/health", (req, res) => res.send("OK"));
+web.get("/analytics/participation.csv", async (req, res) => {
+  const teamId = req.query.teamId;
+  const users = await prisma.user.findMany({
+    where: { teamId },
+  });
+  const end = dayjs().utc().startOf("day");
+  const start = end.subtract(30, "day");
+
+  const entries = await prisma.standupEntry.findMany({
+    where: {
+      teamId,
+      date: {
+        gte: start.toDate(),
+        lt: end.toDate(),
+      },
+    },
+  });
+  const byUser = new Map(users.map((u) => [u.id, 0]));
+  for (const e of entries) {
+    byUser.set(e.userId, (byUser.get(e.userId) || 0) + 1);
+  }
+
+  const rows = ["user, submissions_30d, participation_rate_30d"];
+  for (const u of users) {
+    const subs = byUser.get(u.id) || 0;
+    const rate = ((subs / 30) * 100).toFixed(1);
+    rows.push(`${u.slackUserId}, ${subs}, ${rate}%`);
+  }
+  res.set("Content-Type", "text/csv");
+  res.send(rows.join("\n"));
 });
 
 (async () => {
