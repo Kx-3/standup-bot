@@ -1,5 +1,5 @@
 require("dotenv").config();
-const { App } = require("@slack/bolt");
+const { App, ExpressReceiver } = require("@slack/bolt");
 const { PrismaClient } = require("./generated/prisma");
 const express = require("express");
 const dayjs = require("dayjs");
@@ -11,51 +11,49 @@ const cron = require("node-cron");
 const { timeAt } = require("tz-offset");
 const prisma = new PrismaClient();
 
-const app = new App({
+const receiver = new ExpressReceiver({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
+});
+
+const app = new App({
+  receiver,
   token: process.env.SLACK_BOT_TOKEN,
-  customRoutes: [
-    {
-      path: "/health",
-      method: ["GET"],
-      handler: (req, res) => res.send("OK"),
+});
+
+receiver.app.get("/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
+receiver.app.get("/analytics/participation.csv", async (req, res) => {
+  const teamId = req.query.teamId;
+  const users = await prisma.user.findMany({
+    where: { teamId },
+  });
+  const end = dayjs().utc().startOf("day");
+  const start = end.subtract(30, "day");
+
+  const entries = await prisma.standupEntry.findMany({
+    where: {
+      teamId,
+      date: {
+        gte: start.toDate(),
+        lt: end.toDate(),
+      },
     },
-    {
-        path: "/analytics/participation.csv",
-        method: ["GET"],
-        handler: async (req, res) => {
-          const teamId = req.query.teamId;
-          const users = await prisma.user.findMany({
-            where: { teamId },
-          });
-          const end = dayjs().utc().startOf("day");
-          const start = end.subtract(30, "day");
-      
-          const entries = await prisma.standupEntry.findMany({
-            where: {
-              teamId,
-              date: {
-                gte: start.toDate(),
-                lt: end.toDate(),
-              },
-            },
-          });
-          const byUser = new Map(users.map((u) => [u.id, 0]));
-          for (const e of entries) {
-            byUser.set(e.userId, (byUser.get(e.userId) || 0) + 1);
-          }
-      
-          const rows = ["user, submissions_30d, participation_rate_30d"];
-          for (const u of users) {
-            const subs = byUser.get(u.id) || 0;
-            const rate = ((subs / 30) * 100).toFixed(1);
-            rows.push(`${u.slackUserId}, ${subs}, ${rate}%`);
-          }
-          res.set("Content-Type", "text/csv");
-          res.send(rows.join("\n"));
-        },
-    }
-  ],
+  });
+  const byUser = new Map(users.map((u) => [u.id, 0]));
+  for (const e of entries) {
+    byUser.set(e.userId, (byUser.get(e.userId) || 0) + 1);
+  }
+
+  const rows = ["user, submissions_30d, participation_rate_30d"];
+  for (const u of users) {
+    const subs = byUser.get(u.id) || 0;
+    const rate = ((subs / 30) * 100).toFixed(1);
+    rows.push(`${u.slackUserId}, ${subs}, ${rate}%`);
+  }
+  res.set("Content-Type", "text/csv");
+  res.send(rows.join("\n"));
 });
 
 async function openStandupModal(client, trigger_id, slackTeamId, slackUserId) {
