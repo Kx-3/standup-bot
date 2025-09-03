@@ -50,7 +50,7 @@ receiver.app.get("/analytics/participation.csv", async (req, res) => {
   for (const u of users) {
     const subs = byUser.get(u.id) || 0;
     const rate = ((subs / 30) * 100).toFixed(1);
-    rows.push(`${u.slackUserId}, ${subs}, ${rate}%`);
+    rows.push(`${u.realName || u.slackUserId}, ${subs}, ${rate}%`);
   }
   res.set("Content-Type", "text/csv");
   res.send(rows.join("\n"));
@@ -439,6 +439,7 @@ async function syncChannelUsers(prisma, app) {
     for (const userId of res.members) {
       if (userId.startsWith("B") || userId === "USLACKBOT") continue; // skip bots
       const slackUser = await app.client.users.info({ user: userId });
+      if (slackUser.user?.is_bot || slackUser.user?.deleted) continue;
       const realName = slackUser.user.profile.real_name || slackUser.user.name;
       await prisma.user.upsert({
         where: { slackUserId: userId },
