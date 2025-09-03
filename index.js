@@ -412,6 +412,50 @@ app.command("/participation", async ({ body, ack, client }) => {
   });
 });
 
+async function ensureTeam(prisma, app) {
+  const { team, team_id } = await app.client.auth.test();
+  return await prisma.team.upsert({
+    where: { slackTeamId: team_id },
+    update: { name: team },
+    create: {
+      slackTeamId: team_id,
+      name: team,
+      timezone: process.env.DEFAULT_TEAM_TZ,
+    },
+  });
+}
+
+async function syncChannelUsers(prisma, app) {
+  const standupChannel = process.env.DEFAULT_DIGEST_CHANNEL_ID;
+  const team = await ensureTeam(prisma, app);
+  let cursor;
+  let total = 0;
+  do {
+    const res = await app.client.conversations.members({
+      channel: standupChannel,
+      cursor,
+      limit: 200,
+    });
+    for (const userId of res.members) {
+      if (userId.startsWith("B") || userId === "USLACKBOT") continue; // skip bots
+      const slackUser = await app.client.users.info({ user: userId });
+      const realName = slackUser.user.profile.real_name || slackUser.user.name;
+      await prisma.user.upsert({
+        where: { slackUserId: userId },
+        update: { teamId: team.id, realName },
+        create: { slackUserId: userId, teamId: team.id, realName },
+      });
+      total++;
+    }
+    cursor = res.response_metadata?.next_cursor || undefined;
+  } while (cursor);
+  console.log(`✅ Synced ${total} users to database.`);
+}
+syncChannelUsers(prisma, app).catch(console.error);
+cron.schedule("0 3 * * *", () => {
+  syncChannelUsers(prisma, app).catch(console.error);
+});
+
 (async () => {
   await app.start(process.env.PORT || 3000);
   console.log("⚡️ Slack Bolt app is running!");
