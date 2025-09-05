@@ -230,135 +230,236 @@ app.view("submit_standup", async ({ ack, body, view, client }) => {
   });
 });
 
-cron.schedule("0 9 * * *", async () => {
-  console.log("⏰ Sending daily stand-up reminders...");
-  const teams = await prisma.team.findMany();
-  for (const team of teams) {
-    const users = await prisma.user.findMany({ where: { teamId: team.id } });
+cron.schedule(
+  "0 9 * * 1-5",
+  async () => {
+    console.log("⏰ Sending daily stand-up reminders...");
+    const teams = await prisma.team.findMany();
+    for (const team of teams) {
+      const users = await prisma.user.findMany({ where: { teamId: team.id } });
 
-    for (const user of users) {
-      try {
-        await app.client.chat.postMessage({
-          token: process.env.SLACK_BOT_TOKEN,
-          channel: user.slackUserId,
-          text: "👋 Good morning! Time for your daily stand-up. Use `/standup` to fill it in or click below:",
-          blocks: [
-            {
-              type: "section",
-              text: {
-                type: "mrkdwn",
-                text: "👋 Good morning! Time for your daily stand-up. ",
-              },
-            },
-            {
-              type: "actions",
-              elements: [
-                {
-                  type: "button",
-                  text: {
-                    type: "plain_text",
-                    text: "Start Stand-up",
-                  },
-                  action_id: "open_standup",
-                  value: "start",
+      for (const user of users) {
+        try {
+          await app.client.chat.postMessage({
+            token: process.env.SLACK_BOT_TOKEN,
+            channel: user.slackUserId,
+            text: "👋 Good morning! Time for your daily stand-up. Use `/standup` to fill it in or click below:",
+            blocks: [
+              {
+                type: "section",
+                text: {
+                  type: "mrkdwn",
+                  text: "👋 Good morning! Time for your daily stand-up. ",
                 },
-              ],
-            },
-          ],
-        });
-      } catch (error) {
-        console.error(
-          `Failed to send reminder to user ${user.slackUserId}:`,
-          error
-        );
+              },
+              {
+                type: "actions",
+                elements: [
+                  {
+                    type: "button",
+                    text: {
+                      type: "plain_text",
+                      text: "Start Stand-up",
+                    },
+                    action_id: "open_standup",
+                    value: "start",
+                  },
+                ],
+              },
+            ],
+          });
+        } catch (error) {
+          console.error(
+            `Failed to send reminder to user ${user.slackUserId}:`,
+            error
+          );
+        }
       }
     }
+  },
+  {
+    timezone: "Africa/Nairobi",
   }
-});
+);
 
-cron.schedule("0 17 * * *", async () => {
-  console.log("⏰ Running daily stand-up summary...");
+cron.schedule(
+  "0 17 * * 1-5",
+  async () => {
+    console.log("⏰ Running daily stand-up summary...");
 
-  const todayUTC = dayjs().utc().startOf("day");
-  const tomorrowUTC = todayUTC.add(1, "day");
+    const todayUTC = dayjs().utc().startOf("day");
+    const tomorrowUTC = todayUTC.add(1, "day");
 
-  const entries = await prisma.standupEntry.findMany({
-    where: {
-      date: {
-        gte: todayUTC.toDate(),
-        lt: tomorrowUTC.toDate(),
+    const entries = await prisma.standupEntry.findMany({
+      where: {
+        date: {
+          gte: todayUTC.toDate(),
+          lt: tomorrowUTC.toDate(),
+        },
       },
-    },
-    include: { user: true },
-  });
-  if (entries.length === 0) {
+      include: { user: true },
+    });
+    if (entries.length === 0) {
+      await app.client.chat.postMessage({
+        channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
+        text: "No stand-up entries were submitted today.",
+      });
+      return;
+    }
+
+    const summaryBlocks = [];
+    for (const entry of entries) {
+      summaryBlocks.push(
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*<@${entry.user.slackUserId}>*`,
+          },
+        },
+        {
+          type: "context",
+          elements: [
+            {
+              type: "mrkdwn",
+              text: `Streak: *${entry.user.streak || 0}*`,
+            },
+          ],
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*Yesterday:*\n${entry.yesterday || "-"}`,
+          },
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*Today:*\n${entry.today || "-"}`,
+          },
+        },
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: `*Blockers:*\n${entry.blockers || "-"}`,
+          },
+        },
+        { type: "divider" }
+      );
+    }
+
     await app.client.chat.postMessage({
       channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
-      text: "No stand-up entries were submitted today.",
-    });
-    return;
-  }
-
-  const summaryBlocks = [];
-  for (const entry of entries) {
-    summaryBlocks.push(
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*<@${entry.user.slackUserId}>*`,
+      text: "📊 Daily Stand-up Summary",
+      blocks: [
+        {
+          type: "header",
+          text: {
+            type: "plain_text",
+            text: "📊 Daily Stand-up Summary",
+            emoji: true,
+          },
         },
-      },
-      {
-        type: "context",
-        elements: [
+        ...summaryBlocks,
+      ],
+    });
+  },
+  {
+    timezone: "Africa/Nairobi",
+  }
+);
+
+cron.schedule(
+  "0 9 * * 1",
+  async () => {
+    const teams = await prisma.team.findMany();
+    for (const team of teams) {
+      const end = dayjs().utc().startOf("day");
+      const start = end.subtract(7, "day");
+      const entries = await prisma.standupEntry.findMany({
+        where: {
+          teamId: team.id,
+          date: {
+            gte: start.toDate(),
+            lt: end.toDate(),
+          },
+        },
+        include: { user: true },
+      });
+      const users = await prisma.user.findMany({ where: { teamId: team.id } });
+      const byUser = new Map();
+      for (const u of users) {
+        byUser.set(u.id, []);
+      }
+      for (const e of entries) byUser.get(e.userId)?.push(e);
+
+      const lines = [];
+      for (const u of users) {
+        const subs = byUser.get(u.id)?.length || 0;
+        const rate = ((subs / 5) * 100).toFixed(1);
+        lines.push(`<@${u.slackUserId}>: ${subs} submissions (${rate}%)`);
+      }
+      const blockers = entries
+        .map((e) => e.blockers?.toLowerCase() || "")
+        .filter(Boolean)
+        .join(" ")
+        .split(/\W+/)
+        .filter((s) => s.length > 4);
+      const topTerms =
+        Object.entries(
+          blockers.reduce((acc, term) => {
+            acc[term] = (acc[term] || 0) + 1;
+            return acc;
+          }, {})
+        )
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5)
+          .map(([term, count]) => `${term} (${count})`)
+          .join(", ") || "None";
+      const channel = process.env.DEFAULT_DIGEST_CHANNEL_ID;
+      if (!channel) continue;
+
+      await app.client.chat.postMessage({
+        token: process.env.SLACK_BOT_TOKEN,
+        channel,
+        text: `*Weekly Standup Report*`,
+        blocks: [
           {
-            type: "mrkdwn",
-            text: `Streak: *${entry.user.streak || 0}*`,
+            type: "header",
+            text: {
+              type: "plain_text",
+              text: "Weekly Stand-up Digest",
+            },
+          },
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `*Stand-up Participation (Last 5 weekdays):*\n${
+                lines.join("\n") || "No data"
+              }`,
+            },
+          },
+          {
+            type: "section",
+            elements: [
+              {
+                type: "mrkdwn",
+                text: `*Top blocker (keywords):* ${topTerms}`,
+              },
+            ],
           },
         ],
-      },
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*Yesterday:*\n${entry.yesterday || "-"}`,
-        },
-      },
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*Today:*\n${entry.today || "-"}`,
-        },
-      },
-      {
-        type: "section",
-        text: {
-          type: "mrkdwn",
-          text: `*Blockers:*\n${entry.blockers || "-"}`,
-        },
-      },
-      { type: "divider" }
-    );
+      });
+    }
+  },
+  {
+    timezone: "Africa/Nairobi",
   }
-
-  await app.client.chat.postMessage({
-    channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
-    text: "📊 Daily Stand-up Summary",
-    blocks: [
-      {
-        type: "header",
-        text: {
-          type: "plain_text",
-          text: "📊 Daily Stand-up Summary",
-          emoji: true,
-        },
-      },
-      ...summaryBlocks,
-    ],
-  });
-});
+);
 
 app.action("open_standup", async ({ body, ack, client }) => {
   await ack();
