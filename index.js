@@ -94,7 +94,7 @@ async function openStandupModal(client, trigger_id, slackTeamId, slackUserId) {
   });
   const tz = team.timezone || process.env.DEFAULT_TEAM_TZ;
   const todayTz = dayjs().tz?.(tz) ?? dayjs(); // if no tz plugin, assume server tz
-  const yDateLocal = todayTz.subtract(1, "day").startOf("day");
+  let yDateLocal = todayTz.subtract(1, "day").startOf("day");
   while (yDateLocal.day() === 0 || yDateLocal.day() === 6) {
     //skip Saturday(6) and Sunday(0)
     yDateLocal = yDateLocal.subtract(1, "day");
