@@ -20,6 +20,16 @@ const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
 });
 
+function countWeekdays(start, end) {
+  let count = 0;
+  let d = start.clone()
+  while (d.isBefore(end, "day")) {
+    if (d.day() !== 0 && d.day() !== 6) count++;
+    d = d.add(1, "day");
+  }
+  return count;
+}
+
 receiver.app.get("/health", (req, res) => {
   res.status(200).send("OK");
 });
@@ -31,6 +41,8 @@ receiver.app.get("/analytics/participation.csv", async (req, res) => {
   });
   const end = dayjs().utc().startOf("day");
   const start = end.subtract(30, "day");
+
+  const weekdays = countWeekdays(start, end);
 
   const entries = await prisma.standupEntry.findMany({
     where: {
@@ -49,12 +61,21 @@ receiver.app.get("/analytics/participation.csv", async (req, res) => {
   const rows = ["user, submissions_30d, participation_rate_30d"];
   for (const u of users) {
     const subs = byUser.get(u.id) || 0;
-    const rate = ((subs / 30) * 100).toFixed(1);
+    const rate = weekdays > 0 ? ((subs / weekdays) * 100).toFixed(1) : 0;
     rows.push(`${u.realName || u.slackUserId}, ${subs}, ${rate}%`);
   }
   res.set("Content-Type", "text/csv");
   res.send(rows.join("\n"));
 });
+
+function isNextWeekday(last, current) {
+  let d = dayjs(last).add(1, "day").startOf("day");
+  while (d.day() === 0 || d.day() === 6) {
+    //skip Saturday(6) and Sunday(0)
+    d = d.add(1, "day");
+  }
+  return d.isSame(current, "day");
+}
 
 async function openStandupModal(client, trigger_id, slackTeamId, slackUserId) {
   let team = await prisma.team.upsert({
@@ -74,6 +95,10 @@ async function openStandupModal(client, trigger_id, slackTeamId, slackUserId) {
   const tz = team.timezone || process.env.DEFAULT_TEAM_TZ;
   const todayTz = dayjs().tz?.(tz) ?? dayjs(); // if no tz plugin, assume server tz
   const yDateLocal = todayTz.subtract(1, "day").startOf("day");
+  while (yDateLocal.day() === 0 || yDateLocal.day() === 6) {
+    //skip Saturday(6) and Sunday(0)
+    yDateLocal = yDateLocal.subtract(1, "day");
+  }
   const yDateUTC = yDateLocal.utc();
   const yEntry = await prisma.standupEntry.findFirst({
     where: {
@@ -197,11 +222,7 @@ app.view("submit_standup", async ({ ack, body, view, client }) => {
   const isNew = !last || !dayjs(last).isSame(dateStartUTC, "day");
   let newStreak = user.streak;
   if (isNew) {
-    if (
-      last &&
-      dayjs(last).add(1, "day").startOf("day").isSame(dateStartUTC, "day")
-    )
-      newStreak += 1;
+    if (last && isNextWeekday(last, dateStartUTC)) newStreak += 1;
     else newStreak = 1;
   }
   await prisma.user.update({
@@ -488,6 +509,8 @@ app.command("/participation", async ({ body, ack, client }) => {
   const end = dayjs().utc().startOf("day");
   const start = end.subtract(days, "day");
 
+  const weekdays = countWeekdays(start, end);
+
   const entries = await prisma.standupEntry.findMany({
     where: {
       teamId: team.id,
@@ -504,7 +527,7 @@ app.command("/participation", async ({ body, ack, client }) => {
   let report = `*Stand-up Participation Report (Last ${days} days)*\n`;
   for (const u of users) {
     const subs = byUser.get(u.id) || 0;
-    const rate = ((subs / days) * 100).toFixed(1);
+    const rate = weekdays > 0 ? ((subs / weekdays) * 100).toFixed(1) : 0;
     report += `<@${u.slackUserId}>: ${subs} submissions (${rate}%)\n`;
   }
   await client.chat.postMessage({
