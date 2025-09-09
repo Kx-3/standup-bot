@@ -17,7 +17,17 @@ const receiver = new ExpressReceiver({
 
 const app = new App({
   receiver,
-  token: process.env.SLACK_BOT_TOKEN,
+  authorize: async ({ teamId }) => {
+    const workspace = await prisma.workspace.findUnique({
+      where: { slackTeamId: teamId },
+    });
+    if (!workspace || !workspace.botToken) {
+      throw new Error("Workspace not found or bot token missing");
+    }
+    return {
+      botToken: workspace.botToken,
+    };
+  },
 });
 
 function countWeekdays(start, end) {
@@ -29,6 +39,42 @@ function countWeekdays(start, end) {
   }
   return count;
 }
+
+app.get("/slack/oauth_redirect", async (req, res) => {
+  const { code } = req.query;
+  if (!code) return res.status(400).send("No code provided");
+  try {
+    const response = await fetch("https://slack.com/api/oauth.v2.access", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        code,
+        client_id: process.env.SLACK_CLIENT_ID,
+        client_secret: process.env.SLACK_CLIENT_SECRET,
+        redirect_uri: process.env.SLACK_REDIRECT_URI,
+      }),
+    });
+    const data = await response.json();
+    if (!data.ok) {
+      console.error("OAuth failed:", data);
+      return res.status(400).send("OAuth failed: " + data.error);
+    }
+    await prisma.workspace.upsert({
+      where: { slackTeamId: data.team.id },
+      update: { name: data.team.name, botToken: data.access_token },
+      create: {
+        slackTeamId: data.team.id,
+        name: data.team.name,
+        timezone: process.env.DEFAULT_TEAM_TZ,
+        botToken: data.access_token,
+      },
+    });
+    res.send("App installed successfully to: " + data.team.name);
+  } catch (error) {
+    console.error("OAuth error:", error);
+    res.status(500).send("Internal Server Error");
+  }
+});
 
 receiver.app.get("/health", (req, res) => {
   res.status(200).send("OK");
@@ -347,19 +393,36 @@ app.view("submit_standup", async ({ ack, body, view, client }) => {
   });
 });
 
+app.event("app_uninstalled", async ({ context }) => {
+  // context.teamId is the workspace id that uninstalled
+  try {
+    await prisma.workspace.updateMany({
+      where: { slackTeamId: context.teamId },
+      data: { botToken: "" }, // or delete the row
+    });
+  } catch (err) {
+    console.error("Failed to clean workspace", context.teamId, err);
+  }
+});
+
 cron.schedule(
   "0 9 * * 1-5",
   async () => {
     console.log("⏰ Sending daily stand-up reminders...");
     const workspaces = await prisma.workspace.findMany();
-    for (const workspace of teams) {
+    for (const workspace of workspaces) {
       const users = await prisma.user.findMany({
         where: { workspaceId: workspace.id },
       });
 
+      const client = new App({
+        token: workspace.botToken,
+        signingSecret: process.env.SLACK_SIGNING_SECRET,
+      }).client;
+
       for (const user of users) {
         try {
-          await app.client.chat.postMessage({
+          await client.chat.postMessage({
             token: process.env.SLACK_BOT_TOKEN,
             channel: user.slackUserId,
             text: "👋 Good morning! Time for your daily stand-up. Use `/standup` to fill it in or click below:",
@@ -409,82 +472,89 @@ cron.schedule(
     const todayUTC = dayjs().utc().startOf("day");
     const tomorrowUTC = todayUTC.add(1, "day");
 
-    const entries = await prisma.standupEntry.findMany({
-      where: {
-        date: {
-          gte: todayUTC.toDate(),
-          lt: tomorrowUTC.toDate(),
+    const workspaces = await prisma.workspace.findMany();
+    for (const workspace of workspaces) {
+      const client = new App({
+        token: workspace.botToken,
+      }).client;
+      const entries = await prisma.standupEntry.findMany({
+        where: {
+          workspaceId: workspace.id,
+          date: {
+            gte: todayUTC.toDate(),
+            lt: tomorrowUTC.toDate(),
+          },
         },
-      },
-      include: { user: true },
-    });
-    if (entries.length === 0) {
-      await app.client.chat.postMessage({
-        channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
-        text: "No stand-up entries were submitted today.",
+        include: { user: true },
       });
-      return;
-    }
+      if (entries.length === 0) {
+        await client.chat.postMessage({
+          channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
+          text: "No stand-up entries were submitted today.",
+        });
+        return;
+      }
 
-    const summaryBlocks = [];
-    for (const entry of entries) {
-      summaryBlocks.push(
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `*<@${entry.user.slackUserId}>*`,
-          },
-        },
-        {
-          type: "context",
-          elements: [
-            {
+      const summaryBlocks = [];
+      for (const entry of entries) {
+        summaryBlocks.push(
+          {
+            type: "section",
+            text: {
               type: "mrkdwn",
-              text: `Streak: *${entry.user.streak || 0}*`,
+              text: `*<@${entry.user.slackUserId}>*`,
             },
-          ],
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `*Yesterday:*\n${entry.yesterday || "-"}`,
           },
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `*Today:*\n${entry.today || "-"}`,
+          {
+            type: "context",
+            elements: [
+              {
+                type: "mrkdwn",
+                text: `Streak: *${entry.user.streak || 0}*`,
+              },
+            ],
           },
-        },
-        {
-          type: "section",
-          text: {
-            type: "mrkdwn",
-            text: `*Blockers:*\n${entry.blockers || "-"}`,
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `*Yesterday:*\n${entry.yesterday || "-"}`,
+            },
           },
-        },
-        { type: "divider" }
-      );
-    }
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `*Today:*\n${entry.today || "-"}`,
+            },
+          },
+          {
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: `*Blockers:*\n${entry.blockers || "-"}`,
+            },
+          },
+          { type: "divider" }
+        );
+      }
 
-    await app.client.chat.postMessage({
-      channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
-      text: "📊 Daily Stand-up Summary",
-      blocks: [
-        {
-          type: "header",
-          text: {
-            type: "plain_text",
-            text: "📊 Daily Stand-up Summary",
-            emoji: true,
+      await client.chat.postMessage({
+        channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
+        text: "📊 Daily Stand-up Summary",
+        blocks: [
+          {
+            type: "header",
+            text: {
+              type: "plain_text",
+              text: "📊 Daily Stand-up Summary",
+              emoji: true,
+            },
           },
-        },
-        ...summaryBlocks,
-      ],
-    });
+          ...summaryBlocks,
+        ],
+      });
+    }
   },
   {
     timezone: "Africa/Nairobi",
@@ -498,6 +568,9 @@ cron.schedule(
     for (const workspace of workspaces) {
       const end = dayjs().utc().startOf("day");
       const start = end.subtract(7, "day");
+      const client = new App({
+        token: workspace.botToken,
+      }).client;
       const entries = await prisma.standupEntry.findMany({
         where: {
           workspaceId: workspace.id,
@@ -543,7 +616,7 @@ cron.schedule(
       const channel = process.env.DEFAULT_DIGEST_CHANNEL_ID;
       if (!channel) continue;
 
-      await app.client.chat.postMessage({
+      await client.chat.postMessage({
         token: process.env.SLACK_BOT_TOKEN,
         channel,
         text: `*Weekly Standup Report*`,

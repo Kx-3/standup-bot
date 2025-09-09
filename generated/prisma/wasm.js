@@ -123,6 +123,7 @@ exports.Prisma.WorkspaceScalarFieldEnum = {
   name: 'name',
   timezone: 'timezone',
   channelId: 'channelId',
+  botToken: 'botToken',
   createdAt: 'createdAt'
 };
 

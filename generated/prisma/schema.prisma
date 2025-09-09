@@ -20,6 +20,7 @@ model Workspace {
   name        String?
   timezone    String         @default("Africa/Nairobi")
   channelId   String? // default channel for digests
+  botToken    String
   users       User[]
   teams       Team[]
   entries     StandupEntry[]

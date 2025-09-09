@@ -1355,6 +1355,7 @@ export namespace Prisma {
     name: string | null
     timezone: string | null
     channelId: string | null
+    botToken: string | null
     createdAt: Date | null
   }
 
@@ -1364,6 +1365,7 @@ export namespace Prisma {
     name: string | null
     timezone: string | null
     channelId: string | null
+    botToken: string | null
     createdAt: Date | null
   }
 
@@ -1373,6 +1375,7 @@ export namespace Prisma {
     name: number
     timezone: number
     channelId: number
+    botToken: number
     createdAt: number
     _all: number
   }
@@ -1384,6 +1387,7 @@ export namespace Prisma {
     name?: true
     timezone?: true
     channelId?: true
+    botToken?: true
     createdAt?: true
   }
 
@@ -1393,6 +1397,7 @@ export namespace Prisma {
     name?: true
     timezone?: true
     channelId?: true
+    botToken?: true
     createdAt?: true
   }
 
@@ -1402,6 +1407,7 @@ export namespace Prisma {
     name?: true
     timezone?: true
     channelId?: true
+    botToken?: true
     createdAt?: true
     _all?: true
   }
@@ -1484,6 +1490,7 @@ export namespace Prisma {
     name: string | null
     timezone: string
     channelId: string | null
+    botToken: string
     createdAt: Date
     _count: WorkspaceCountAggregateOutputType | null
     _min: WorkspaceMinAggregateOutputType | null
@@ -1510,6 +1517,7 @@ export namespace Prisma {
     name?: boolean
     timezone?: boolean
     channelId?: boolean
+    botToken?: boolean
     createdAt?: boolean
     users?: boolean | Workspace$usersArgs<ExtArgs>
     teams?: boolean | Workspace$teamsArgs<ExtArgs>
@@ -1523,6 +1531,7 @@ export namespace Prisma {
     name?: boolean
     timezone?: boolean
     channelId?: boolean
+    botToken?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["workspace"]>
 
@@ -1532,6 +1541,7 @@ export namespace Prisma {
     name?: boolean
     timezone?: boolean
     channelId?: boolean
+    botToken?: boolean
     createdAt?: boolean
   }, ExtArgs["result"]["workspace"]>
 
@@ -1541,10 +1551,11 @@ export namespace Prisma {
     name?: boolean
     timezone?: boolean
     channelId?: boolean
+    botToken?: boolean
     createdAt?: boolean
   }
 
-  export type WorkspaceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slackTeamId" | "name" | "timezone" | "channelId" | "createdAt", ExtArgs["result"]["workspace"]>
+  export type WorkspaceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slackTeamId" | "name" | "timezone" | "channelId" | "botToken" | "createdAt", ExtArgs["result"]["workspace"]>
   export type WorkspaceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Workspace$usersArgs<ExtArgs>
     teams?: boolean | Workspace$teamsArgs<ExtArgs>
@@ -1567,6 +1578,7 @@ export namespace Prisma {
       name: string | null
       timezone: string
       channelId: string | null
+      botToken: string
       createdAt: Date
     }, ExtArgs["result"]["workspace"]>
     composites: {}
@@ -1999,6 +2011,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Workspace", 'String'>
     readonly timezone: FieldRef<"Workspace", 'String'>
     readonly channelId: FieldRef<"Workspace", 'String'>
+    readonly botToken: FieldRef<"Workspace", 'String'>
     readonly createdAt: FieldRef<"Workspace", 'DateTime'>
   }
     
@@ -6985,6 +6998,7 @@ export namespace Prisma {
     name: 'name',
     timezone: 'timezone',
     channelId: 'channelId',
+    botToken: 'botToken',
     createdAt: 'createdAt'
   };
 
@@ -7143,6 +7157,7 @@ export namespace Prisma {
     name?: StringNullableFilter<"Workspace"> | string | null
     timezone?: StringFilter<"Workspace"> | string
     channelId?: StringNullableFilter<"Workspace"> | string | null
+    botToken?: StringFilter<"Workspace"> | string
     createdAt?: DateTimeFilter<"Workspace"> | Date | string
     users?: UserListRelationFilter
     teams?: TeamListRelationFilter
@@ -7155,6 +7170,7 @@ export namespace Prisma {
     name?: SortOrderInput | SortOrder
     timezone?: SortOrder
     channelId?: SortOrderInput | SortOrder
+    botToken?: SortOrder
     createdAt?: SortOrder
     users?: UserOrderByRelationAggregateInput
     teams?: TeamOrderByRelationAggregateInput
@@ -7170,6 +7186,7 @@ export namespace Prisma {
     name?: StringNullableFilter<"Workspace"> | string | null
     timezone?: StringFilter<"Workspace"> | string
     channelId?: StringNullableFilter<"Workspace"> | string | null
+    botToken?: StringFilter<"Workspace"> | string
     createdAt?: DateTimeFilter<"Workspace"> | Date | string
     users?: UserListRelationFilter
     teams?: TeamListRelationFilter
@@ -7182,6 +7199,7 @@ export namespace Prisma {
     name?: SortOrderInput | SortOrder
     timezone?: SortOrder
     channelId?: SortOrderInput | SortOrder
+    botToken?: SortOrder
     createdAt?: SortOrder
     _count?: WorkspaceCountOrderByAggregateInput
     _max?: WorkspaceMaxOrderByAggregateInput
@@ -7197,6 +7215,7 @@ export namespace Prisma {
     name?: StringNullableWithAggregatesFilter<"Workspace"> | string | null
     timezone?: StringWithAggregatesFilter<"Workspace"> | string
     channelId?: StringNullableWithAggregatesFilter<"Workspace"> | string | null
+    botToken?: StringWithAggregatesFilter<"Workspace"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Workspace"> | Date | string
   }
 
@@ -7490,6 +7509,7 @@ export namespace Prisma {
     name?: string | null
     timezone?: string
     channelId?: string | null
+    botToken: string
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutWorkspaceInput
     teams?: TeamCreateNestedManyWithoutWorkspaceInput
@@ -7502,6 +7522,7 @@ export namespace Prisma {
     name?: string | null
     timezone?: string
     channelId?: string | null
+    botToken: string
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutWorkspaceInput
     teams?: TeamUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -7514,6 +7535,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    botToken?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutWorkspaceNestedInput
     teams?: TeamUpdateManyWithoutWorkspaceNestedInput
@@ -7526,6 +7548,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    botToken?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutWorkspaceNestedInput
     teams?: TeamUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -7538,6 +7561,7 @@ export namespace Prisma {
     name?: string | null
     timezone?: string
     channelId?: string | null
+    botToken: string
     createdAt?: Date | string
   }
 
@@ -7547,6 +7571,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    botToken?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -7556,6 +7581,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    botToken?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -7932,6 +7958,7 @@ export namespace Prisma {
     name?: SortOrder
     timezone?: SortOrder
     channelId?: SortOrder
+    botToken?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -7941,6 +7968,7 @@ export namespace Prisma {
     name?: SortOrder
     timezone?: SortOrder
     channelId?: SortOrder
+    botToken?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -7950,6 +7978,7 @@ export namespace Prisma {
     name?: SortOrder
     timezone?: SortOrder
     channelId?: SortOrder
+    botToken?: SortOrder
     createdAt?: SortOrder
   }
 
@@ -8967,6 +8996,7 @@ export namespace Prisma {
     name?: string | null
     timezone?: string
     channelId?: string | null
+    botToken: string
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutWorkspaceInput
     entries?: StandupEntryCreateNestedManyWithoutWorkspaceInput
@@ -8978,6 +9008,7 @@ export namespace Prisma {
     name?: string | null
     timezone?: string
     channelId?: string | null
+    botToken: string
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutWorkspaceInput
     entries?: StandupEntryUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -9069,6 +9100,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    botToken?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutWorkspaceNestedInput
     entries?: StandupEntryUpdateManyWithoutWorkspaceNestedInput
@@ -9080,6 +9112,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    botToken?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutWorkspaceNestedInput
     entries?: StandupEntryUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -9123,6 +9156,7 @@ export namespace Prisma {
     name?: string | null
     timezone?: string
     channelId?: string | null
+    botToken: string
     createdAt?: Date | string
     teams?: TeamCreateNestedManyWithoutWorkspaceInput
     entries?: StandupEntryCreateNestedManyWithoutWorkspaceInput
@@ -9134,6 +9168,7 @@ export namespace Prisma {
     name?: string | null
     timezone?: string
     channelId?: string | null
+    botToken: string
     createdAt?: Date | string
     teams?: TeamUncheckedCreateNestedManyWithoutWorkspaceInput
     entries?: StandupEntryUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -9213,6 +9248,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    botToken?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     teams?: TeamUpdateManyWithoutWorkspaceNestedInput
     entries?: StandupEntryUpdateManyWithoutWorkspaceNestedInput
@@ -9224,6 +9260,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    botToken?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     teams?: TeamUncheckedUpdateManyWithoutWorkspaceNestedInput
     entries?: StandupEntryUncheckedUpdateManyWithoutWorkspaceNestedInput
@@ -9303,6 +9340,7 @@ export namespace Prisma {
     name?: string | null
     timezone?: string
     channelId?: string | null
+    botToken: string
     createdAt?: Date | string
     users?: UserCreateNestedManyWithoutWorkspaceInput
     teams?: TeamCreateNestedManyWithoutWorkspaceInput
@@ -9314,6 +9352,7 @@ export namespace Prisma {
     name?: string | null
     timezone?: string
     channelId?: string | null
+    botToken: string
     createdAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutWorkspaceInput
     teams?: TeamUncheckedCreateNestedManyWithoutWorkspaceInput
@@ -9393,6 +9432,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    botToken?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutWorkspaceNestedInput
     teams?: TeamUpdateManyWithoutWorkspaceNestedInput
@@ -9404,6 +9444,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    botToken?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutWorkspaceNestedInput
     teams?: TeamUncheckedUpdateManyWithoutWorkspaceNestedInput
