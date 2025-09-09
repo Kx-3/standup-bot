@@ -209,7 +209,7 @@ app.command("/standup", async ({ body, ack, client }) => {
                 {
                   text: { type: "plain_text", text: "Student Ops" },
                   value: "studentops",
-                }
+                },
               ],
             },
           },
@@ -228,6 +228,16 @@ app.view("team_selection_modal", async ({ ack, body, view, client }) => {
   const selectedTeam =
     view.state.values.team_block.team_select.selected_option.value;
 
+  const workspace = await prisma.workspace.upsert({
+    where: { slackTeamId },
+    update: {},
+    create: {
+      slackTeamId,
+      name: slackTeamId,
+      timezone: process.env.DEFAULT_TEAM_TZ,
+    },
+  });
+
   let team = await prisma.team.findFirst({
     where: { name: selectedTeam },
   });
@@ -235,7 +245,7 @@ app.view("team_selection_modal", async ({ ack, body, view, client }) => {
     team = await prisma.team.create({
       data: {
         name: selectedTeam,
-        workspaceId: slackTeamId,
+        workspaceId: workspace.id,
       },
     });
   }
