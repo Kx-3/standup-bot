@@ -40,7 +40,7 @@ function countWeekdays(start, end) {
   return count;
 }
 
-app.get("/slack/oauth_redirect", async (req, res) => {
+receiver.app.get("/slack/oauth_redirect", async (req, res) => {
   const { code } = req.query;
   if (!code) return res.status(400).send("No code provided");
   try {
@@ -69,11 +69,91 @@ app.get("/slack/oauth_redirect", async (req, res) => {
         botToken: data.access_token,
       },
     });
+    await app.client.chat.postMessage({
+      token: data.access_token, // bot token for this workspace
+      channel: data.authed_user.id, // send directly to installer
+      text: "🎉 Thanks for installing the Standup Bot!",
+      blocks: [
+        {
+          type: "section",
+          text: {
+            type: "mrkdwn",
+            text: "Welcome! Let's finish setting up your standup bot.",
+          },
+        },
+        {
+          type: "actions",
+          elements: [
+            {
+              type: "button",
+              text: {
+                type: "plain_text",
+                text: "Open Setup",
+              },
+              action_id: "open_setup",
+            },
+          ],
+        },
+      ],
+    });
     res.send("App installed successfully to: " + data.team.name);
   } catch (error) {
     console.error("OAuth error:", error);
     res.status(500).send("Internal Server Error");
   }
+});
+
+app.action("open_setup", async ({ body, ack, client }) => {
+  await ack();
+
+  await client.views.open({
+    trigger_id: body.trigger_id,
+    view: {
+      type: "modal",
+      callback_id: "setup_modal",
+      title: { type: "plain_text", text: "Standup Setup" },
+      submit: { type: "plain_text", text: "Save" },
+      blocks: [
+        {
+          type: "input",
+          block_id: "channel_block",
+          label: { type: "plain_text", text: "Choose Standup Channel" },
+          element: {
+            type: "conversations_select",
+            action_id: "channel_select",
+            default_to_current_conversation: true,
+          },
+        },
+      ],
+    },
+  });
+});
+
+app.view("setup_modal", async ({ ack, body, view, client }) => {
+  await ack();
+
+  const channelId =
+    view.state.values.channel_block.channel_select.selected_conversation;
+
+  const installerId = body.user.id;
+  const workspaceId = body.team.id;
+
+  // Save this in your DB
+  await prisma.workspace.upsert({
+    where: { slackTeamId: workspaceId },
+    create: {
+      slackTeamId: workspaceId,
+      channelId: channelId,
+    },
+    update: {
+      channelId: channelId,
+    },
+  });
+
+  await client.chat.postMessage({
+    channel: installerId,
+    text: `✅ Setup complete! Standups will be posted in <#${channelId}>.`,
+  });
 });
 
 receiver.app.get("/health", (req, res) => {
@@ -540,7 +620,8 @@ cron.schedule(
       }
 
       await client.chat.postMessage({
-        channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
+        channel: workspace.channelId || process.env.DEFAULT_DIGEST_CHANNEL_ID,
+        token: workspace.botToken,
         text: "📊 Daily Stand-up Summary",
         blocks: [
           {
@@ -613,11 +694,12 @@ cron.schedule(
           .slice(0, 5)
           .map(([term, count]) => `${term} (${count})`)
           .join(", ") || "None";
-      const channel = process.env.DEFAULT_DIGEST_CHANNEL_ID;
+      const channel =
+        workspace.channelId || process.env.DEFAULT_DIGEST_CHANNEL_ID;
       if (!channel) continue;
 
       await client.chat.postMessage({
-        token: process.env.SLACK_BOT_TOKEN,
+        token: workspace.botToken,
         channel,
         text: `*Weekly Standup Report*`,
         blocks: [
