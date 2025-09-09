@@ -117,7 +117,7 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.TeamScalarFieldEnum = {
+exports.Prisma.WorkspaceScalarFieldEnum = {
   id: 'id',
   slackTeamId: 'slackTeamId',
   name: 'name',
@@ -126,11 +126,18 @@ exports.Prisma.TeamScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.TeamScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  workspaceId: 'workspaceId'
+};
+
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
   slackUserId: 'slackUserId',
   realName: 'realName',
   displayName: 'displayName',
+  workspaceId: 'workspaceId',
   teamId: 'teamId',
   streak: 'streak',
   lastSubmit: 'lastSubmit'
@@ -140,6 +147,7 @@ exports.Prisma.StandupEntryScalarFieldEnum = {
   id: 'id',
   date: 'date',
   userId: 'userId',
+  workspaceId: 'workspaceId',
   teamId: 'teamId',
   yesterday: 'yesterday',
   today: 'today',
@@ -151,7 +159,7 @@ exports.Prisma.StandupEntryScalarFieldEnum = {
 exports.Prisma.ParticipationSnapshotScalarFieldEnum = {
   id: 'id',
   weekOf: 'weekOf',
-  teamId: 'teamId',
+  workspaceId: 'workspaceId',
   filled: 'filled',
   missing: 'missing',
   streakLeaders: 'streakLeaders',
@@ -186,6 +194,7 @@ exports.Prisma.QueryMode = {
 
 
 exports.Prisma.ModelName = {
+  Workspace: 'Workspace',
   Team: 'Team',
   User: 'User',
   StandupEntry: 'StandupEntry',

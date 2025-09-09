@@ -22,7 +22,7 @@ const app = new App({
 
 function countWeekdays(start, end) {
   let count = 0;
-  let d = start.clone()
+  let d = start.clone();
   while (d.isBefore(end, "day")) {
     if (d.day() !== 0 && d.day() !== 6) count++;
     d = d.add(1, "day");
@@ -78,7 +78,7 @@ function isNextWeekday(last, current) {
 }
 
 async function openStandupModal(client, trigger_id, slackTeamId, slackUserId) {
-  let team = await prisma.team.upsert({
+  let workspace = await prisma.workspace.upsert({
     where: { slackTeamId },
     update: {},
     create: {
@@ -90,9 +90,9 @@ async function openStandupModal(client, trigger_id, slackTeamId, slackUserId) {
   let user = await prisma.user.upsert({
     where: { slackUserId },
     update: {},
-    create: { slackUserId, teamId: team.id },
+    create: { slackUserId, workspaceId: workspace.id },
   });
-  const tz = team.timezone || process.env.DEFAULT_TEAM_TZ;
+  const tz = workspace.timezone || process.env.DEFAULT_TEAM_TZ;
   const todayTz = dayjs().tz?.(tz) ?? dayjs(); // if no tz plugin, assume server tz
   let yDateLocal = todayTz.subtract(1, "day").startOf("day");
   while (yDateLocal.day() === 0 || yDateLocal.day() === 6) {
@@ -167,7 +167,91 @@ async function openStandupModal(client, trigger_id, slackTeamId, slackUserId) {
 
 app.command("/standup", async ({ body, ack, client }) => {
   await ack();
-  openStandupModal(client, body.trigger_id, body.team_id, body.user_id);
+
+  const slackUserId = body.user_id;
+  let user = await prisma.user.findUnique({
+    where: { slackUserId },
+  });
+  if (!user || !user.teamId) {
+    await client.views.open({
+      trigger_id: body.trigger_id,
+      view: {
+        type: "modal",
+        callback_id: "team_selection_modal",
+        title: { type: "plain_text", text: "Select Your Team" },
+        submit: { type: "plain_text", text: "Submit" },
+        blocks: [
+          {
+            type: "input",
+            block_id: "team_block",
+            label: { type: "plain_text", text: "Choose Your Team" },
+            element: {
+              type: "static_select",
+              action_id: "team_select",
+              placeholder: { type: "plain_text", text: "Select a team" },
+              options: [
+                {
+                  text: { type: "plain_text", text: "Software" },
+                  value: "software",
+                },
+                {
+                  text: { type: "plain_text", text: "Data" },
+                  value: "data",
+                },
+                {
+                  text: { type: "plain_text", text: "Tech Ops" },
+                  value: "techops",
+                },
+                {
+                  text: { type: "plain_text", text: "Growth" },
+                  value: "growth",
+                },
+                {
+                  text: { type: "plain_text", text: "Student Ops" },
+                  value: "studentops",
+                }
+              ],
+            },
+          },
+        ],
+      },
+    });
+  } else {
+    openStandupModal(client, body.trigger_id, body.team_id, body.user_id);
+  }
+});
+
+app.view("team_selection_modal", async ({ ack, body, view, client }) => {
+  await ack();
+  const slackUserId = body.user.id;
+  const slackTeamId = body.team.id;
+  const selectedTeam =
+    view.state.values.team_block.team_select.selected_option.value;
+
+  let team = await prisma.team.findFirst({
+    where: { name: selectedTeam },
+  });
+  if (!team) {
+    team = await prisma.team.create({
+      data: {
+        name: selectedTeam,
+        workspaceId: slackTeamId,
+      },
+    });
+  }
+
+  await prisma.user.upsert({
+    where: { slackUserId },
+    update: { teamId: team.id },
+    create: {
+      slackUserId,
+      teamId: team.id,
+      realName: body.user.name,
+      workspaceId: slackTeamId,
+    },
+  });
+
+  await openStandupModal(client, body.trigger_id, slackTeamId, slackUserId);
 });
 
 app.view("submit_standup", async ({ ack, body, view, client }) => {
@@ -175,16 +259,17 @@ app.view("submit_standup", async ({ ack, body, view, client }) => {
   const slackTeamId = body.team.id;
   const slackUserId = body.user.id;
 
-  const team = await prisma.team.findUnique({
+  const workspace = await prisma.workspace.findUnique({
     where: { slackTeamId },
   });
   const user = await prisma.user.upsert({
     where: { slackUserId },
     update: {},
-    create: { slackUserId, teamId: team.id },
+    create: { slackUserId, workspaceId: workspace.id },
+    include: { team: true },
   });
 
-  const tz = team.timezone || process.env.DEFAULT_TEAM_TZ;
+  const tz = workspace.timezone || process.env.DEFAULT_TEAM_TZ;
   const dateLocal = dayjs().tz?.(tz) ?? dayjs(); // if no tz plugin, assume server tz
   const dateStartUTC = dateLocal.startOf("day").utc().toDate();
 
@@ -210,7 +295,8 @@ app.view("submit_standup", async ({ ack, body, view, client }) => {
     update: { today: t, yesterday: y, blockers: b },
     create: {
       userId: user.id,
-      teamId: team.id,
+      teamId: user.teamId,
+      workspaceId: workspace.id,
       date: dateStartUTC,
       today: t,
       yesterday: y,
@@ -255,9 +341,11 @@ cron.schedule(
   "0 9 * * 1-5",
   async () => {
     console.log("⏰ Sending daily stand-up reminders...");
-    const teams = await prisma.team.findMany();
-    for (const team of teams) {
-      const users = await prisma.user.findMany({ where: { teamId: team.id } });
+    const workspaces = await prisma.workspace.findMany();
+    for (const workspace of teams) {
+      const users = await prisma.user.findMany({
+        where: { workspaceId: workspace.id },
+      });
 
       for (const user of users) {
         try {
@@ -394,15 +482,15 @@ cron.schedule(
 );
 
 cron.schedule(
-  "0 9 * * 1",
+  "0 9 * * 6",
   async () => {
-    const teams = await prisma.team.findMany();
-    for (const team of teams) {
+    const workspaces = await prisma.workspace.findMany();
+    for (const workspace of workspaces) {
       const end = dayjs().utc().startOf("day");
       const start = end.subtract(7, "day");
       const entries = await prisma.standupEntry.findMany({
         where: {
-          teamId: team.id,
+          workspaceId: workspace.id,
           date: {
             gte: start.toDate(),
             lt: end.toDate(),
@@ -410,7 +498,9 @@ cron.schedule(
         },
         include: { user: true },
       });
-      const users = await prisma.user.findMany({ where: { teamId: team.id } });
+      const users = await prisma.user.findMany({
+        where: { workspaceId: workspace.id },
+      });
       const byUser = new Map();
       for (const u of users) {
         byUser.set(u.id, []);
@@ -491,20 +581,20 @@ app.command("/participation", async ({ body, ack, client }) => {
   await ack();
   const slackTeamId = body.team_id;
   const days = parseInt(body.text) || 30;
-  const team = await prisma.team.findUnique({
+  const workspace = await prisma.workspace.findUnique({
     where: { slackTeamId },
   });
-  if (!team) {
+  if (!workspace) {
     await client.chat.postEphemeral({
       channel: body.channel_id,
       user: body.user_id,
-      text: "Team not found in the database.",
+      text: "Workspace not found in the database.",
     });
     return;
   }
 
   const users = await prisma.user.findMany({
-    where: { teamId: team.id },
+    where: { workspaceId: team.id },
   });
   const end = dayjs().utc().startOf("day");
   const start = end.subtract(days, "day");
@@ -513,7 +603,7 @@ app.command("/participation", async ({ body, ack, client }) => {
 
   const entries = await prisma.standupEntry.findMany({
     where: {
-      teamId: team.id,
+      workspaceId: team.id,
       date: {
         gte: start.toDate(),
         lt: end.toDate(),
@@ -538,7 +628,7 @@ app.command("/participation", async ({ body, ack, client }) => {
 
 async function ensureTeam(prisma, app) {
   const { team, team_id } = await app.client.auth.test();
-  return await prisma.team.upsert({
+  return await prisma.workspace.upsert({
     where: { slackTeamId: team_id },
     update: { name: team },
     create: {
@@ -567,8 +657,8 @@ async function syncChannelUsers(prisma, app) {
       const realName = slackUser.user.profile.real_name || slackUser.user.name;
       await prisma.user.upsert({
         where: { slackUserId: userId },
-        update: { teamId: team.id, realName },
-        create: { slackUserId: userId, teamId: team.id, realName },
+        update: { workspaceId: team.id, realName },
+        create: { slackUserId: userId, workspaceId: team.id, realName },
       });
       total++;
     }

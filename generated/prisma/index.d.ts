@@ -14,6 +14,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
 
 
 /**
+ * Model Workspace
+ * 
+ */
+export type Workspace = $Result.DefaultSelection<Prisma.$WorkspacePayload>
+/**
  * Model Team
  * 
  */
@@ -41,8 +46,8 @@ export type ParticipationSnapshot = $Result.DefaultSelection<Prisma.$Participati
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Teams
- * const teams = await prisma.team.findMany()
+ * // Fetch zero or more Workspaces
+ * const workspaces = await prisma.workspace.findMany()
  * ```
  *
  *
@@ -62,8 +67,8 @@ export class PrismaClient<
    * @example
    * ```
    * const prisma = new PrismaClient()
-   * // Fetch zero or more Teams
-   * const teams = await prisma.team.findMany()
+   * // Fetch zero or more Workspaces
+   * const workspaces = await prisma.workspace.findMany()
    * ```
    *
    *
@@ -153,6 +158,16 @@ export class PrismaClient<
   }>>
 
       /**
+   * `prisma.workspace`: Exposes CRUD operations for the **Workspace** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Workspaces
+    * const workspaces = await prisma.workspace.findMany()
+    * ```
+    */
+  get workspace(): Prisma.WorkspaceDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.team`: Exposes CRUD operations for the **Team** model.
     * Example usage:
     * ```ts
@@ -631,6 +646,7 @@ export namespace Prisma {
 
 
   export const ModelName: {
+    Workspace: 'Workspace',
     Team: 'Team',
     User: 'User',
     StandupEntry: 'StandupEntry',
@@ -653,10 +669,84 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "team" | "user" | "standupEntry" | "participationSnapshot"
+      modelProps: "workspace" | "team" | "user" | "standupEntry" | "participationSnapshot"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
+      Workspace: {
+        payload: Prisma.$WorkspacePayload<ExtArgs>
+        fields: Prisma.WorkspaceFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.WorkspaceFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.WorkspaceFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePayload>
+          }
+          findFirst: {
+            args: Prisma.WorkspaceFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.WorkspaceFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePayload>
+          }
+          findMany: {
+            args: Prisma.WorkspaceFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePayload>[]
+          }
+          create: {
+            args: Prisma.WorkspaceCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePayload>
+          }
+          createMany: {
+            args: Prisma.WorkspaceCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.WorkspaceCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePayload>[]
+          }
+          delete: {
+            args: Prisma.WorkspaceDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePayload>
+          }
+          update: {
+            args: Prisma.WorkspaceUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePayload>
+          }
+          deleteMany: {
+            args: Prisma.WorkspaceDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.WorkspaceUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.WorkspaceUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePayload>[]
+          }
+          upsert: {
+            args: Prisma.WorkspaceUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$WorkspacePayload>
+          }
+          aggregate: {
+            args: Prisma.WorkspaceAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateWorkspace>
+          }
+          groupBy: {
+            args: Prisma.WorkspaceGroupByArgs<ExtArgs>
+            result: $Utils.Optional<WorkspaceGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.WorkspaceCountArgs<ExtArgs>
+            result: $Utils.Optional<WorkspaceCountAggregateOutputType> | number
+          }
+        }
+      }
       Team: {
         payload: Prisma.$TeamPayload<ExtArgs>
         fields: Prisma.TeamFieldRefs
@@ -1045,6 +1135,7 @@ export namespace Prisma {
     omit?: Prisma.GlobalOmitConfig
   }
   export type GlobalOmitConfig = {
+    workspace?: WorkspaceOmit
     team?: TeamOmit
     user?: UserOmit
     standupEntry?: StandupEntryOmit
@@ -1125,17 +1216,66 @@ export namespace Prisma {
 
 
   /**
+   * Count Type WorkspaceCountOutputType
+   */
+
+  export type WorkspaceCountOutputType = {
+    users: number
+    teams: number
+    entries: number
+  }
+
+  export type WorkspaceCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | WorkspaceCountOutputTypeCountUsersArgs
+    teams?: boolean | WorkspaceCountOutputTypeCountTeamsArgs
+    entries?: boolean | WorkspaceCountOutputTypeCountEntriesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the WorkspaceCountOutputType
+     */
+    select?: WorkspaceCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountUsersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserWhereInput
+  }
+
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountTeamsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TeamWhereInput
+  }
+
+  /**
+   * WorkspaceCountOutputType without action
+   */
+  export type WorkspaceCountOutputTypeCountEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: StandupEntryWhereInput
+  }
+
+
+  /**
    * Count Type TeamCountOutputType
    */
 
   export type TeamCountOutputType = {
     users: number
-    entries: number
+    standupEntries: number
   }
 
   export type TeamCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | TeamCountOutputTypeCountUsersArgs
-    entries?: boolean | TeamCountOutputTypeCountEntriesArgs
+    standupEntries?: boolean | TeamCountOutputTypeCountStandupEntriesArgs
   }
 
   // Custom InputTypes
@@ -1159,7 +1299,7 @@ export namespace Prisma {
   /**
    * TeamCountOutputType without action
    */
-  export type TeamCountOutputTypeCountEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type TeamCountOutputTypeCountStandupEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: StandupEntryWhereInput
   }
 
@@ -1200,6 +1340,1143 @@ export namespace Prisma {
    */
 
   /**
+   * Model Workspace
+   */
+
+  export type AggregateWorkspace = {
+    _count: WorkspaceCountAggregateOutputType | null
+    _min: WorkspaceMinAggregateOutputType | null
+    _max: WorkspaceMaxAggregateOutputType | null
+  }
+
+  export type WorkspaceMinAggregateOutputType = {
+    id: string | null
+    slackTeamId: string | null
+    name: string | null
+    timezone: string | null
+    channelId: string | null
+    createdAt: Date | null
+  }
+
+  export type WorkspaceMaxAggregateOutputType = {
+    id: string | null
+    slackTeamId: string | null
+    name: string | null
+    timezone: string | null
+    channelId: string | null
+    createdAt: Date | null
+  }
+
+  export type WorkspaceCountAggregateOutputType = {
+    id: number
+    slackTeamId: number
+    name: number
+    timezone: number
+    channelId: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type WorkspaceMinAggregateInputType = {
+    id?: true
+    slackTeamId?: true
+    name?: true
+    timezone?: true
+    channelId?: true
+    createdAt?: true
+  }
+
+  export type WorkspaceMaxAggregateInputType = {
+    id?: true
+    slackTeamId?: true
+    name?: true
+    timezone?: true
+    channelId?: true
+    createdAt?: true
+  }
+
+  export type WorkspaceCountAggregateInputType = {
+    id?: true
+    slackTeamId?: true
+    name?: true
+    timezone?: true
+    channelId?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type WorkspaceAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Workspace to aggregate.
+     */
+    where?: WorkspaceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Workspaces to fetch.
+     */
+    orderBy?: WorkspaceOrderByWithRelationInput | WorkspaceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: WorkspaceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Workspaces from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Workspaces.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Workspaces
+    **/
+    _count?: true | WorkspaceCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: WorkspaceMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: WorkspaceMaxAggregateInputType
+  }
+
+  export type GetWorkspaceAggregateType<T extends WorkspaceAggregateArgs> = {
+        [P in keyof T & keyof AggregateWorkspace]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateWorkspace[P]>
+      : GetScalarType<T[P], AggregateWorkspace[P]>
+  }
+
+
+
+
+  export type WorkspaceGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: WorkspaceWhereInput
+    orderBy?: WorkspaceOrderByWithAggregationInput | WorkspaceOrderByWithAggregationInput[]
+    by: WorkspaceScalarFieldEnum[] | WorkspaceScalarFieldEnum
+    having?: WorkspaceScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: WorkspaceCountAggregateInputType | true
+    _min?: WorkspaceMinAggregateInputType
+    _max?: WorkspaceMaxAggregateInputType
+  }
+
+  export type WorkspaceGroupByOutputType = {
+    id: string
+    slackTeamId: string
+    name: string | null
+    timezone: string
+    channelId: string | null
+    createdAt: Date
+    _count: WorkspaceCountAggregateOutputType | null
+    _min: WorkspaceMinAggregateOutputType | null
+    _max: WorkspaceMaxAggregateOutputType | null
+  }
+
+  type GetWorkspaceGroupByPayload<T extends WorkspaceGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<WorkspaceGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof WorkspaceGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], WorkspaceGroupByOutputType[P]>
+            : GetScalarType<T[P], WorkspaceGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type WorkspaceSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slackTeamId?: boolean
+    name?: boolean
+    timezone?: boolean
+    channelId?: boolean
+    createdAt?: boolean
+    users?: boolean | Workspace$usersArgs<ExtArgs>
+    teams?: boolean | Workspace$teamsArgs<ExtArgs>
+    entries?: boolean | Workspace$entriesArgs<ExtArgs>
+    _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["workspace"]>
+
+  export type WorkspaceSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slackTeamId?: boolean
+    name?: boolean
+    timezone?: boolean
+    channelId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["workspace"]>
+
+  export type WorkspaceSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    slackTeamId?: boolean
+    name?: boolean
+    timezone?: boolean
+    channelId?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["workspace"]>
+
+  export type WorkspaceSelectScalar = {
+    id?: boolean
+    slackTeamId?: boolean
+    name?: boolean
+    timezone?: boolean
+    channelId?: boolean
+    createdAt?: boolean
+  }
+
+  export type WorkspaceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slackTeamId" | "name" | "timezone" | "channelId" | "createdAt", ExtArgs["result"]["workspace"]>
+  export type WorkspaceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    users?: boolean | Workspace$usersArgs<ExtArgs>
+    teams?: boolean | Workspace$teamsArgs<ExtArgs>
+    entries?: boolean | Workspace$entriesArgs<ExtArgs>
+    _count?: boolean | WorkspaceCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type WorkspaceIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type WorkspaceIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $WorkspacePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Workspace"
+    objects: {
+      users: Prisma.$UserPayload<ExtArgs>[]
+      teams: Prisma.$TeamPayload<ExtArgs>[]
+      entries: Prisma.$StandupEntryPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      slackTeamId: string
+      name: string | null
+      timezone: string
+      channelId: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["workspace"]>
+    composites: {}
+  }
+
+  type WorkspaceGetPayload<S extends boolean | null | undefined | WorkspaceDefaultArgs> = $Result.GetResult<Prisma.$WorkspacePayload, S>
+
+  type WorkspaceCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<WorkspaceFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: WorkspaceCountAggregateInputType | true
+    }
+
+  export interface WorkspaceDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Workspace'], meta: { name: 'Workspace' } }
+    /**
+     * Find zero or one Workspace that matches the filter.
+     * @param {WorkspaceFindUniqueArgs} args - Arguments to find a Workspace
+     * @example
+     * // Get one Workspace
+     * const workspace = await prisma.workspace.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends WorkspaceFindUniqueArgs>(args: SelectSubset<T, WorkspaceFindUniqueArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Workspace that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {WorkspaceFindUniqueOrThrowArgs} args - Arguments to find a Workspace
+     * @example
+     * // Get one Workspace
+     * const workspace = await prisma.workspace.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends WorkspaceFindUniqueOrThrowArgs>(args: SelectSubset<T, WorkspaceFindUniqueOrThrowArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Workspace that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspaceFindFirstArgs} args - Arguments to find a Workspace
+     * @example
+     * // Get one Workspace
+     * const workspace = await prisma.workspace.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends WorkspaceFindFirstArgs>(args?: SelectSubset<T, WorkspaceFindFirstArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Workspace that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspaceFindFirstOrThrowArgs} args - Arguments to find a Workspace
+     * @example
+     * // Get one Workspace
+     * const workspace = await prisma.workspace.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends WorkspaceFindFirstOrThrowArgs>(args?: SelectSubset<T, WorkspaceFindFirstOrThrowArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Workspaces that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspaceFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Workspaces
+     * const workspaces = await prisma.workspace.findMany()
+     * 
+     * // Get first 10 Workspaces
+     * const workspaces = await prisma.workspace.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const workspaceWithIdOnly = await prisma.workspace.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends WorkspaceFindManyArgs>(args?: SelectSubset<T, WorkspaceFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Workspace.
+     * @param {WorkspaceCreateArgs} args - Arguments to create a Workspace.
+     * @example
+     * // Create one Workspace
+     * const Workspace = await prisma.workspace.create({
+     *   data: {
+     *     // ... data to create a Workspace
+     *   }
+     * })
+     * 
+     */
+    create<T extends WorkspaceCreateArgs>(args: SelectSubset<T, WorkspaceCreateArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Workspaces.
+     * @param {WorkspaceCreateManyArgs} args - Arguments to create many Workspaces.
+     * @example
+     * // Create many Workspaces
+     * const workspace = await prisma.workspace.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends WorkspaceCreateManyArgs>(args?: SelectSubset<T, WorkspaceCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Workspaces and returns the data saved in the database.
+     * @param {WorkspaceCreateManyAndReturnArgs} args - Arguments to create many Workspaces.
+     * @example
+     * // Create many Workspaces
+     * const workspace = await prisma.workspace.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Workspaces and only return the `id`
+     * const workspaceWithIdOnly = await prisma.workspace.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends WorkspaceCreateManyAndReturnArgs>(args?: SelectSubset<T, WorkspaceCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Workspace.
+     * @param {WorkspaceDeleteArgs} args - Arguments to delete one Workspace.
+     * @example
+     * // Delete one Workspace
+     * const Workspace = await prisma.workspace.delete({
+     *   where: {
+     *     // ... filter to delete one Workspace
+     *   }
+     * })
+     * 
+     */
+    delete<T extends WorkspaceDeleteArgs>(args: SelectSubset<T, WorkspaceDeleteArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Workspace.
+     * @param {WorkspaceUpdateArgs} args - Arguments to update one Workspace.
+     * @example
+     * // Update one Workspace
+     * const workspace = await prisma.workspace.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends WorkspaceUpdateArgs>(args: SelectSubset<T, WorkspaceUpdateArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Workspaces.
+     * @param {WorkspaceDeleteManyArgs} args - Arguments to filter Workspaces to delete.
+     * @example
+     * // Delete a few Workspaces
+     * const { count } = await prisma.workspace.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends WorkspaceDeleteManyArgs>(args?: SelectSubset<T, WorkspaceDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Workspaces.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspaceUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Workspaces
+     * const workspace = await prisma.workspace.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends WorkspaceUpdateManyArgs>(args: SelectSubset<T, WorkspaceUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Workspaces and returns the data updated in the database.
+     * @param {WorkspaceUpdateManyAndReturnArgs} args - Arguments to update many Workspaces.
+     * @example
+     * // Update many Workspaces
+     * const workspace = await prisma.workspace.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Workspaces and only return the `id`
+     * const workspaceWithIdOnly = await prisma.workspace.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends WorkspaceUpdateManyAndReturnArgs>(args: SelectSubset<T, WorkspaceUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Workspace.
+     * @param {WorkspaceUpsertArgs} args - Arguments to update or create a Workspace.
+     * @example
+     * // Update or create a Workspace
+     * const workspace = await prisma.workspace.upsert({
+     *   create: {
+     *     // ... data to create a Workspace
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Workspace we want to update
+     *   }
+     * })
+     */
+    upsert<T extends WorkspaceUpsertArgs>(args: SelectSubset<T, WorkspaceUpsertArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Workspaces.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspaceCountArgs} args - Arguments to filter Workspaces to count.
+     * @example
+     * // Count the number of Workspaces
+     * const count = await prisma.workspace.count({
+     *   where: {
+     *     // ... the filter for the Workspaces we want to count
+     *   }
+     * })
+    **/
+    count<T extends WorkspaceCountArgs>(
+      args?: Subset<T, WorkspaceCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], WorkspaceCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Workspace.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspaceAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends WorkspaceAggregateArgs>(args: Subset<T, WorkspaceAggregateArgs>): Prisma.PrismaPromise<GetWorkspaceAggregateType<T>>
+
+    /**
+     * Group by Workspace.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {WorkspaceGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends WorkspaceGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: WorkspaceGroupByArgs['orderBy'] }
+        : { orderBy?: WorkspaceGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, WorkspaceGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetWorkspaceGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Workspace model
+   */
+  readonly fields: WorkspaceFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Workspace.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__WorkspaceClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    users<T extends Workspace$usersArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    teams<T extends Workspace$teamsArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$teamsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    entries<T extends Workspace$entriesArgs<ExtArgs> = {}>(args?: Subset<T, Workspace$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StandupEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Workspace model
+   */
+  interface WorkspaceFieldRefs {
+    readonly id: FieldRef<"Workspace", 'String'>
+    readonly slackTeamId: FieldRef<"Workspace", 'String'>
+    readonly name: FieldRef<"Workspace", 'String'>
+    readonly timezone: FieldRef<"Workspace", 'String'>
+    readonly channelId: FieldRef<"Workspace", 'String'>
+    readonly createdAt: FieldRef<"Workspace", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Workspace findUnique
+   */
+  export type WorkspaceFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    /**
+     * Filter, which Workspace to fetch.
+     */
+    where: WorkspaceWhereUniqueInput
+  }
+
+  /**
+   * Workspace findUniqueOrThrow
+   */
+  export type WorkspaceFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    /**
+     * Filter, which Workspace to fetch.
+     */
+    where: WorkspaceWhereUniqueInput
+  }
+
+  /**
+   * Workspace findFirst
+   */
+  export type WorkspaceFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    /**
+     * Filter, which Workspace to fetch.
+     */
+    where?: WorkspaceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Workspaces to fetch.
+     */
+    orderBy?: WorkspaceOrderByWithRelationInput | WorkspaceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Workspaces.
+     */
+    cursor?: WorkspaceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Workspaces from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Workspaces.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Workspaces.
+     */
+    distinct?: WorkspaceScalarFieldEnum | WorkspaceScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace findFirstOrThrow
+   */
+  export type WorkspaceFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    /**
+     * Filter, which Workspace to fetch.
+     */
+    where?: WorkspaceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Workspaces to fetch.
+     */
+    orderBy?: WorkspaceOrderByWithRelationInput | WorkspaceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Workspaces.
+     */
+    cursor?: WorkspaceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Workspaces from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Workspaces.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Workspaces.
+     */
+    distinct?: WorkspaceScalarFieldEnum | WorkspaceScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace findMany
+   */
+  export type WorkspaceFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    /**
+     * Filter, which Workspaces to fetch.
+     */
+    where?: WorkspaceWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Workspaces to fetch.
+     */
+    orderBy?: WorkspaceOrderByWithRelationInput | WorkspaceOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Workspaces.
+     */
+    cursor?: WorkspaceWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Workspaces from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Workspaces.
+     */
+    skip?: number
+    distinct?: WorkspaceScalarFieldEnum | WorkspaceScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace create
+   */
+  export type WorkspaceCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Workspace.
+     */
+    data: XOR<WorkspaceCreateInput, WorkspaceUncheckedCreateInput>
+  }
+
+  /**
+   * Workspace createMany
+   */
+  export type WorkspaceCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Workspaces.
+     */
+    data: WorkspaceCreateManyInput | WorkspaceCreateManyInput[]
+  }
+
+  /**
+   * Workspace createManyAndReturn
+   */
+  export type WorkspaceCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * The data used to create many Workspaces.
+     */
+    data: WorkspaceCreateManyInput | WorkspaceCreateManyInput[]
+  }
+
+  /**
+   * Workspace update
+   */
+  export type WorkspaceUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Workspace.
+     */
+    data: XOR<WorkspaceUpdateInput, WorkspaceUncheckedUpdateInput>
+    /**
+     * Choose, which Workspace to update.
+     */
+    where: WorkspaceWhereUniqueInput
+  }
+
+  /**
+   * Workspace updateMany
+   */
+  export type WorkspaceUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Workspaces.
+     */
+    data: XOR<WorkspaceUpdateManyMutationInput, WorkspaceUncheckedUpdateManyInput>
+    /**
+     * Filter which Workspaces to update
+     */
+    where?: WorkspaceWhereInput
+    /**
+     * Limit how many Workspaces to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Workspace updateManyAndReturn
+   */
+  export type WorkspaceUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * The data used to update Workspaces.
+     */
+    data: XOR<WorkspaceUpdateManyMutationInput, WorkspaceUncheckedUpdateManyInput>
+    /**
+     * Filter which Workspaces to update
+     */
+    where?: WorkspaceWhereInput
+    /**
+     * Limit how many Workspaces to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Workspace upsert
+   */
+  export type WorkspaceUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Workspace to update in case it exists.
+     */
+    where: WorkspaceWhereUniqueInput
+    /**
+     * In case the Workspace found by the `where` argument doesn't exist, create a new Workspace with this data.
+     */
+    create: XOR<WorkspaceCreateInput, WorkspaceUncheckedCreateInput>
+    /**
+     * In case the Workspace was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<WorkspaceUpdateInput, WorkspaceUncheckedUpdateInput>
+  }
+
+  /**
+   * Workspace delete
+   */
+  export type WorkspaceDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+    /**
+     * Filter which Workspace to delete.
+     */
+    where: WorkspaceWhereUniqueInput
+  }
+
+  /**
+   * Workspace deleteMany
+   */
+  export type WorkspaceDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Workspaces to delete
+     */
+    where?: WorkspaceWhereInput
+    /**
+     * Limit how many Workspaces to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Workspace.users
+   */
+  export type Workspace$usersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+    orderBy?: UserOrderByWithRelationInput | UserOrderByWithRelationInput[]
+    cursor?: UserWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserScalarFieldEnum | UserScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace.teams
+   */
+  export type Workspace$teamsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Team
+     */
+    select?: TeamSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Team
+     */
+    omit?: TeamOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeamInclude<ExtArgs> | null
+    where?: TeamWhereInput
+    orderBy?: TeamOrderByWithRelationInput | TeamOrderByWithRelationInput[]
+    cursor?: TeamWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: TeamScalarFieldEnum | TeamScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace.entries
+   */
+  export type Workspace$entriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the StandupEntry
+     */
+    select?: StandupEntrySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the StandupEntry
+     */
+    omit?: StandupEntryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: StandupEntryInclude<ExtArgs> | null
+    where?: StandupEntryWhereInput
+    orderBy?: StandupEntryOrderByWithRelationInput | StandupEntryOrderByWithRelationInput[]
+    cursor?: StandupEntryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: StandupEntryScalarFieldEnum | StandupEntryScalarFieldEnum[]
+  }
+
+  /**
+   * Workspace without action
+   */
+  export type WorkspaceDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Workspace
+     */
+    select?: WorkspaceSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Workspace
+     */
+    omit?: WorkspaceOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: WorkspaceInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Team
    */
 
@@ -1211,58 +2488,40 @@ export namespace Prisma {
 
   export type TeamMinAggregateOutputType = {
     id: string | null
-    slackTeamId: string | null
     name: string | null
-    timezone: string | null
-    channelId: string | null
-    createdAt: Date | null
+    workspaceId: string | null
   }
 
   export type TeamMaxAggregateOutputType = {
     id: string | null
-    slackTeamId: string | null
     name: string | null
-    timezone: string | null
-    channelId: string | null
-    createdAt: Date | null
+    workspaceId: string | null
   }
 
   export type TeamCountAggregateOutputType = {
     id: number
-    slackTeamId: number
     name: number
-    timezone: number
-    channelId: number
-    createdAt: number
+    workspaceId: number
     _all: number
   }
 
 
   export type TeamMinAggregateInputType = {
     id?: true
-    slackTeamId?: true
     name?: true
-    timezone?: true
-    channelId?: true
-    createdAt?: true
+    workspaceId?: true
   }
 
   export type TeamMaxAggregateInputType = {
     id?: true
-    slackTeamId?: true
     name?: true
-    timezone?: true
-    channelId?: true
-    createdAt?: true
+    workspaceId?: true
   }
 
   export type TeamCountAggregateInputType = {
     id?: true
-    slackTeamId?: true
     name?: true
-    timezone?: true
-    channelId?: true
-    createdAt?: true
+    workspaceId?: true
     _all?: true
   }
 
@@ -1340,11 +2599,8 @@ export namespace Prisma {
 
   export type TeamGroupByOutputType = {
     id: string
-    slackTeamId: string
-    name: string | null
-    timezone: string
-    channelId: string | null
-    createdAt: Date
+    name: string
+    workspaceId: string
     _count: TeamCountAggregateOutputType | null
     _min: TeamMinAggregateOutputType | null
     _max: TeamMaxAggregateOutputType | null
@@ -1366,65 +2622,59 @@ export namespace Prisma {
 
   export type TeamSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    slackTeamId?: boolean
     name?: boolean
-    timezone?: boolean
-    channelId?: boolean
-    createdAt?: boolean
+    workspaceId?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
     users?: boolean | Team$usersArgs<ExtArgs>
-    entries?: boolean | Team$entriesArgs<ExtArgs>
+    standupEntries?: boolean | Team$standupEntriesArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["team"]>
 
   export type TeamSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    slackTeamId?: boolean
     name?: boolean
-    timezone?: boolean
-    channelId?: boolean
-    createdAt?: boolean
+    workspaceId?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["team"]>
 
   export type TeamSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
-    slackTeamId?: boolean
     name?: boolean
-    timezone?: boolean
-    channelId?: boolean
-    createdAt?: boolean
+    workspaceId?: boolean
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["team"]>
 
   export type TeamSelectScalar = {
     id?: boolean
-    slackTeamId?: boolean
     name?: boolean
-    timezone?: boolean
-    channelId?: boolean
-    createdAt?: boolean
+    workspaceId?: boolean
   }
 
-  export type TeamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slackTeamId" | "name" | "timezone" | "channelId" | "createdAt", ExtArgs["result"]["team"]>
+  export type TeamOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "workspaceId", ExtArgs["result"]["team"]>
   export type TeamInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
     users?: boolean | Team$usersArgs<ExtArgs>
-    entries?: boolean | Team$entriesArgs<ExtArgs>
+    standupEntries?: boolean | Team$standupEntriesArgs<ExtArgs>
     _count?: boolean | TeamCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type TeamIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type TeamIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type TeamIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }
+  export type TeamIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+  }
 
   export type $TeamPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Team"
     objects: {
+      workspace: Prisma.$WorkspacePayload<ExtArgs>
       users: Prisma.$UserPayload<ExtArgs>[]
-      entries: Prisma.$StandupEntryPayload<ExtArgs>[]
+      standupEntries: Prisma.$StandupEntryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
-      slackTeamId: string
-      name: string | null
-      timezone: string
-      channelId: string | null
-      createdAt: Date
+      name: string
+      workspaceId: string
     }, ExtArgs["result"]["team"]>
     composites: {}
   }
@@ -1819,8 +3069,9 @@ export namespace Prisma {
    */
   export interface Prisma__TeamClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    workspace<T extends WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkspaceDefaultArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     users<T extends Team$usersArgs<ExtArgs> = {}>(args?: Subset<T, Team$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    entries<T extends Team$entriesArgs<ExtArgs> = {}>(args?: Subset<T, Team$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StandupEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    standupEntries<T extends Team$standupEntriesArgs<ExtArgs> = {}>(args?: Subset<T, Team$standupEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StandupEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1851,11 +3102,8 @@ export namespace Prisma {
    */
   interface TeamFieldRefs {
     readonly id: FieldRef<"Team", 'String'>
-    readonly slackTeamId: FieldRef<"Team", 'String'>
     readonly name: FieldRef<"Team", 'String'>
-    readonly timezone: FieldRef<"Team", 'String'>
-    readonly channelId: FieldRef<"Team", 'String'>
-    readonly createdAt: FieldRef<"Team", 'DateTime'>
+    readonly workspaceId: FieldRef<"Team", 'String'>
   }
     
 
@@ -2103,6 +3351,10 @@ export namespace Prisma {
      * The data used to create many Teams.
      */
     data: TeamCreateManyInput | TeamCreateManyInput[]
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeamIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -2173,6 +3425,10 @@ export namespace Prisma {
      * Limit how many Teams to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeamIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -2266,9 +3522,9 @@ export namespace Prisma {
   }
 
   /**
-   * Team.entries
+   * Team.standupEntries
    */
-  export type Team$entriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Team$standupEntriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the StandupEntry
      */
@@ -2333,6 +3589,7 @@ export namespace Prisma {
     slackUserId: string | null
     realName: string | null
     displayName: string | null
+    workspaceId: string | null
     teamId: string | null
     streak: number | null
     lastSubmit: Date | null
@@ -2343,6 +3600,7 @@ export namespace Prisma {
     slackUserId: string | null
     realName: string | null
     displayName: string | null
+    workspaceId: string | null
     teamId: string | null
     streak: number | null
     lastSubmit: Date | null
@@ -2353,6 +3611,7 @@ export namespace Prisma {
     slackUserId: number
     realName: number
     displayName: number
+    workspaceId: number
     teamId: number
     streak: number
     lastSubmit: number
@@ -2373,6 +3632,7 @@ export namespace Prisma {
     slackUserId?: true
     realName?: true
     displayName?: true
+    workspaceId?: true
     teamId?: true
     streak?: true
     lastSubmit?: true
@@ -2383,6 +3643,7 @@ export namespace Prisma {
     slackUserId?: true
     realName?: true
     displayName?: true
+    workspaceId?: true
     teamId?: true
     streak?: true
     lastSubmit?: true
@@ -2393,6 +3654,7 @@ export namespace Prisma {
     slackUserId?: true
     realName?: true
     displayName?: true
+    workspaceId?: true
     teamId?: true
     streak?: true
     lastSubmit?: true
@@ -2490,7 +3752,8 @@ export namespace Prisma {
     slackUserId: string
     realName: string | null
     displayName: string | null
-    teamId: string
+    workspaceId: string
+    teamId: string | null
     streak: number
     lastSubmit: Date | null
     _count: UserCountAggregateOutputType | null
@@ -2519,10 +3782,12 @@ export namespace Prisma {
     slackUserId?: boolean
     realName?: boolean
     displayName?: boolean
+    workspaceId?: boolean
     teamId?: boolean
     streak?: boolean
     lastSubmit?: boolean
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | User$teamArgs<ExtArgs>
     entries?: boolean | User$entriesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
@@ -2532,10 +3797,12 @@ export namespace Prisma {
     slackUserId?: boolean
     realName?: boolean
     displayName?: boolean
+    workspaceId?: boolean
     teamId?: boolean
     streak?: boolean
     lastSubmit?: boolean
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | User$teamArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -2543,10 +3810,12 @@ export namespace Prisma {
     slackUserId?: boolean
     realName?: boolean
     displayName?: boolean
+    workspaceId?: boolean
     teamId?: boolean
     streak?: boolean
     lastSubmit?: boolean
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | User$teamArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectScalar = {
@@ -2554,28 +3823,33 @@ export namespace Prisma {
     slackUserId?: boolean
     realName?: boolean
     displayName?: boolean
+    workspaceId?: boolean
     teamId?: boolean
     streak?: boolean
     lastSubmit?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slackUserId" | "realName" | "displayName" | "teamId" | "streak" | "lastSubmit", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "slackUserId" | "realName" | "displayName" | "workspaceId" | "teamId" | "streak" | "lastSubmit", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | User$teamArgs<ExtArgs>
     entries?: boolean | User$entriesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | User$teamArgs<ExtArgs>
   }
   export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | User$teamArgs<ExtArgs>
   }
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
     objects: {
-      team: Prisma.$TeamPayload<ExtArgs>
+      workspace: Prisma.$WorkspacePayload<ExtArgs>
+      team: Prisma.$TeamPayload<ExtArgs> | null
       entries: Prisma.$StandupEntryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -2583,7 +3857,8 @@ export namespace Prisma {
       slackUserId: string
       realName: string | null
       displayName: string | null
-      teamId: string
+      workspaceId: string
+      teamId: string | null
       streak: number
       lastSubmit: Date | null
     }, ExtArgs["result"]["user"]>
@@ -2980,7 +4255,8 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
-    team<T extends TeamDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TeamDefaultArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    workspace<T extends WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkspaceDefaultArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    team<T extends User$teamArgs<ExtArgs> = {}>(args?: Subset<T, User$teamArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     entries<T extends User$entriesArgs<ExtArgs> = {}>(args?: Subset<T, User$entriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$StandupEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -3015,6 +4291,7 @@ export namespace Prisma {
     readonly slackUserId: FieldRef<"User", 'String'>
     readonly realName: FieldRef<"User", 'String'>
     readonly displayName: FieldRef<"User", 'String'>
+    readonly workspaceId: FieldRef<"User", 'String'>
     readonly teamId: FieldRef<"User", 'String'>
     readonly streak: FieldRef<"User", 'Int'>
     readonly lastSubmit: FieldRef<"User", 'DateTime'>
@@ -3412,6 +4689,25 @@ export namespace Prisma {
   }
 
   /**
+   * User.team
+   */
+  export type User$teamArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Team
+     */
+    select?: TeamSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Team
+     */
+    omit?: TeamOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeamInclude<ExtArgs> | null
+    where?: TeamWhereInput
+  }
+
+  /**
    * User.entries
    */
   export type User$entriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -3468,6 +4764,7 @@ export namespace Prisma {
     id: string | null
     date: Date | null
     userId: string | null
+    workspaceId: string | null
     teamId: string | null
     yesterday: string | null
     today: string | null
@@ -3480,6 +4777,7 @@ export namespace Prisma {
     id: string | null
     date: Date | null
     userId: string | null
+    workspaceId: string | null
     teamId: string | null
     yesterday: string | null
     today: string | null
@@ -3492,6 +4790,7 @@ export namespace Prisma {
     id: number
     date: number
     userId: number
+    workspaceId: number
     teamId: number
     yesterday: number
     today: number
@@ -3506,6 +4805,7 @@ export namespace Prisma {
     id?: true
     date?: true
     userId?: true
+    workspaceId?: true
     teamId?: true
     yesterday?: true
     today?: true
@@ -3518,6 +4818,7 @@ export namespace Prisma {
     id?: true
     date?: true
     userId?: true
+    workspaceId?: true
     teamId?: true
     yesterday?: true
     today?: true
@@ -3530,6 +4831,7 @@ export namespace Prisma {
     id?: true
     date?: true
     userId?: true
+    workspaceId?: true
     teamId?: true
     yesterday?: true
     today?: true
@@ -3615,7 +4917,8 @@ export namespace Prisma {
     id: string
     date: Date
     userId: string
-    teamId: string
+    workspaceId: string
+    teamId: string | null
     yesterday: string
     today: string
     blockers: string | null
@@ -3644,6 +4947,7 @@ export namespace Prisma {
     id?: boolean
     date?: boolean
     userId?: boolean
+    workspaceId?: boolean
     teamId?: boolean
     yesterday?: boolean
     today?: boolean
@@ -3651,13 +4955,15 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | StandupEntry$teamArgs<ExtArgs>
   }, ExtArgs["result"]["standupEntry"]>
 
   export type StandupEntrySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     date?: boolean
     userId?: boolean
+    workspaceId?: boolean
     teamId?: boolean
     yesterday?: boolean
     today?: boolean
@@ -3665,13 +4971,15 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | StandupEntry$teamArgs<ExtArgs>
   }, ExtArgs["result"]["standupEntry"]>
 
   export type StandupEntrySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     date?: boolean
     userId?: boolean
+    workspaceId?: boolean
     teamId?: boolean
     yesterday?: boolean
     today?: boolean
@@ -3679,13 +4987,15 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | StandupEntry$teamArgs<ExtArgs>
   }, ExtArgs["result"]["standupEntry"]>
 
   export type StandupEntrySelectScalar = {
     id?: boolean
     date?: boolean
     userId?: boolean
+    workspaceId?: boolean
     teamId?: boolean
     yesterday?: boolean
     today?: boolean
@@ -3694,31 +5004,36 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type StandupEntryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "userId" | "teamId" | "yesterday" | "today" | "blockers" | "createdAt" | "updatedAt", ExtArgs["result"]["standupEntry"]>
+  export type StandupEntryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "date" | "userId" | "workspaceId" | "teamId" | "yesterday" | "today" | "blockers" | "createdAt" | "updatedAt", ExtArgs["result"]["standupEntry"]>
   export type StandupEntryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | StandupEntry$teamArgs<ExtArgs>
   }
   export type StandupEntryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | StandupEntry$teamArgs<ExtArgs>
   }
   export type StandupEntryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
-    team?: boolean | TeamDefaultArgs<ExtArgs>
+    workspace?: boolean | WorkspaceDefaultArgs<ExtArgs>
+    team?: boolean | StandupEntry$teamArgs<ExtArgs>
   }
 
   export type $StandupEntryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "StandupEntry"
     objects: {
       user: Prisma.$UserPayload<ExtArgs>
-      team: Prisma.$TeamPayload<ExtArgs>
+      workspace: Prisma.$WorkspacePayload<ExtArgs>
+      team: Prisma.$TeamPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       date: Date
       userId: string
-      teamId: string
+      workspaceId: string
+      teamId: string | null
       yesterday: string
       today: string
       blockers: string | null
@@ -4119,7 +5434,8 @@ export namespace Prisma {
   export interface Prisma__StandupEntryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    team<T extends TeamDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TeamDefaultArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    workspace<T extends WorkspaceDefaultArgs<ExtArgs> = {}>(args?: Subset<T, WorkspaceDefaultArgs<ExtArgs>>): Prisma__WorkspaceClient<$Result.GetResult<Prisma.$WorkspacePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    team<T extends StandupEntry$teamArgs<ExtArgs> = {}>(args?: Subset<T, StandupEntry$teamArgs<ExtArgs>>): Prisma__TeamClient<$Result.GetResult<Prisma.$TeamPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4152,6 +5468,7 @@ export namespace Prisma {
     readonly id: FieldRef<"StandupEntry", 'String'>
     readonly date: FieldRef<"StandupEntry", 'DateTime'>
     readonly userId: FieldRef<"StandupEntry", 'String'>
+    readonly workspaceId: FieldRef<"StandupEntry", 'String'>
     readonly teamId: FieldRef<"StandupEntry", 'String'>
     readonly yesterday: FieldRef<"StandupEntry", 'String'>
     readonly today: FieldRef<"StandupEntry", 'String'>
@@ -4552,6 +5869,25 @@ export namespace Prisma {
   }
 
   /**
+   * StandupEntry.team
+   */
+  export type StandupEntry$teamArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Team
+     */
+    select?: TeamSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Team
+     */
+    omit?: TeamOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TeamInclude<ExtArgs> | null
+    where?: TeamWhereInput
+  }
+
+  /**
    * StandupEntry without action
    */
   export type StandupEntryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4595,7 +5931,7 @@ export namespace Prisma {
   export type ParticipationSnapshotMinAggregateOutputType = {
     id: string | null
     weekOf: Date | null
-    teamId: string | null
+    workspaceId: string | null
     filled: number | null
     missing: number | null
     createdAt: Date | null
@@ -4604,7 +5940,7 @@ export namespace Prisma {
   export type ParticipationSnapshotMaxAggregateOutputType = {
     id: string | null
     weekOf: Date | null
-    teamId: string | null
+    workspaceId: string | null
     filled: number | null
     missing: number | null
     createdAt: Date | null
@@ -4613,7 +5949,7 @@ export namespace Prisma {
   export type ParticipationSnapshotCountAggregateOutputType = {
     id: number
     weekOf: number
-    teamId: number
+    workspaceId: number
     filled: number
     missing: number
     streakLeaders: number
@@ -4636,7 +5972,7 @@ export namespace Prisma {
   export type ParticipationSnapshotMinAggregateInputType = {
     id?: true
     weekOf?: true
-    teamId?: true
+    workspaceId?: true
     filled?: true
     missing?: true
     createdAt?: true
@@ -4645,7 +5981,7 @@ export namespace Prisma {
   export type ParticipationSnapshotMaxAggregateInputType = {
     id?: true
     weekOf?: true
-    teamId?: true
+    workspaceId?: true
     filled?: true
     missing?: true
     createdAt?: true
@@ -4654,7 +5990,7 @@ export namespace Prisma {
   export type ParticipationSnapshotCountAggregateInputType = {
     id?: true
     weekOf?: true
-    teamId?: true
+    workspaceId?: true
     filled?: true
     missing?: true
     streakLeaders?: true
@@ -4752,7 +6088,7 @@ export namespace Prisma {
   export type ParticipationSnapshotGroupByOutputType = {
     id: string
     weekOf: Date
-    teamId: string
+    workspaceId: string
     filled: number
     missing: number
     streakLeaders: JsonValue
@@ -4782,7 +6118,7 @@ export namespace Prisma {
   export type ParticipationSnapshotSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     weekOf?: boolean
-    teamId?: boolean
+    workspaceId?: boolean
     filled?: boolean
     missing?: boolean
     streakLeaders?: boolean
@@ -4793,7 +6129,7 @@ export namespace Prisma {
   export type ParticipationSnapshotSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     weekOf?: boolean
-    teamId?: boolean
+    workspaceId?: boolean
     filled?: boolean
     missing?: boolean
     streakLeaders?: boolean
@@ -4804,7 +6140,7 @@ export namespace Prisma {
   export type ParticipationSnapshotSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     weekOf?: boolean
-    teamId?: boolean
+    workspaceId?: boolean
     filled?: boolean
     missing?: boolean
     streakLeaders?: boolean
@@ -4815,7 +6151,7 @@ export namespace Prisma {
   export type ParticipationSnapshotSelectScalar = {
     id?: boolean
     weekOf?: boolean
-    teamId?: boolean
+    workspaceId?: boolean
     filled?: boolean
     missing?: boolean
     streakLeaders?: boolean
@@ -4823,7 +6159,7 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type ParticipationSnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "weekOf" | "teamId" | "filled" | "missing" | "streakLeaders" | "blockersTop" | "createdAt", ExtArgs["result"]["participationSnapshot"]>
+  export type ParticipationSnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "weekOf" | "workspaceId" | "filled" | "missing" | "streakLeaders" | "blockersTop" | "createdAt", ExtArgs["result"]["participationSnapshot"]>
 
   export type $ParticipationSnapshotPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "ParticipationSnapshot"
@@ -4831,7 +6167,7 @@ export namespace Prisma {
     scalars: $Extensions.GetPayloadResult<{
       id: string
       weekOf: Date
-      teamId: string
+      workspaceId: string
       filled: number
       missing: number
       streakLeaders: Prisma.JsonValue
@@ -5262,7 +6598,7 @@ export namespace Prisma {
   interface ParticipationSnapshotFieldRefs {
     readonly id: FieldRef<"ParticipationSnapshot", 'String'>
     readonly weekOf: FieldRef<"ParticipationSnapshot", 'DateTime'>
-    readonly teamId: FieldRef<"ParticipationSnapshot", 'String'>
+    readonly workspaceId: FieldRef<"ParticipationSnapshot", 'String'>
     readonly filled: FieldRef<"ParticipationSnapshot", 'Int'>
     readonly missing: FieldRef<"ParticipationSnapshot", 'Int'>
     readonly streakLeaders: FieldRef<"ParticipationSnapshot", 'Json'>
@@ -5643,13 +6979,22 @@ export namespace Prisma {
   export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-  export const TeamScalarFieldEnum: {
+  export const WorkspaceScalarFieldEnum: {
     id: 'id',
     slackTeamId: 'slackTeamId',
     name: 'name',
     timezone: 'timezone',
     channelId: 'channelId',
     createdAt: 'createdAt'
+  };
+
+  export type WorkspaceScalarFieldEnum = (typeof WorkspaceScalarFieldEnum)[keyof typeof WorkspaceScalarFieldEnum]
+
+
+  export const TeamScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    workspaceId: 'workspaceId'
   };
 
   export type TeamScalarFieldEnum = (typeof TeamScalarFieldEnum)[keyof typeof TeamScalarFieldEnum]
@@ -5660,6 +7005,7 @@ export namespace Prisma {
     slackUserId: 'slackUserId',
     realName: 'realName',
     displayName: 'displayName',
+    workspaceId: 'workspaceId',
     teamId: 'teamId',
     streak: 'streak',
     lastSubmit: 'lastSubmit'
@@ -5672,6 +7018,7 @@ export namespace Prisma {
     id: 'id',
     date: 'date',
     userId: 'userId',
+    workspaceId: 'workspaceId',
     teamId: 'teamId',
     yesterday: 'yesterday',
     today: 'today',
@@ -5686,7 +7033,7 @@ export namespace Prisma {
   export const ParticipationSnapshotScalarFieldEnum: {
     id: 'id',
     weekOf: 'weekOf',
-    teamId: 'teamId',
+    workspaceId: 'workspaceId',
     filled: 'filled',
     missing: 'missing',
     streakLeaders: 'streakLeaders',
@@ -5787,21 +7134,22 @@ export namespace Prisma {
    */
 
 
-  export type TeamWhereInput = {
-    AND?: TeamWhereInput | TeamWhereInput[]
-    OR?: TeamWhereInput[]
-    NOT?: TeamWhereInput | TeamWhereInput[]
-    id?: StringFilter<"Team"> | string
-    slackTeamId?: StringFilter<"Team"> | string
-    name?: StringNullableFilter<"Team"> | string | null
-    timezone?: StringFilter<"Team"> | string
-    channelId?: StringNullableFilter<"Team"> | string | null
-    createdAt?: DateTimeFilter<"Team"> | Date | string
+  export type WorkspaceWhereInput = {
+    AND?: WorkspaceWhereInput | WorkspaceWhereInput[]
+    OR?: WorkspaceWhereInput[]
+    NOT?: WorkspaceWhereInput | WorkspaceWhereInput[]
+    id?: StringFilter<"Workspace"> | string
+    slackTeamId?: StringFilter<"Workspace"> | string
+    name?: StringNullableFilter<"Workspace"> | string | null
+    timezone?: StringFilter<"Workspace"> | string
+    channelId?: StringNullableFilter<"Workspace"> | string | null
+    createdAt?: DateTimeFilter<"Workspace"> | Date | string
     users?: UserListRelationFilter
+    teams?: TeamListRelationFilter
     entries?: StandupEntryListRelationFilter
   }
 
-  export type TeamOrderByWithRelationInput = {
+  export type WorkspaceOrderByWithRelationInput = {
     id?: SortOrder
     slackTeamId?: SortOrder
     name?: SortOrderInput | SortOrder
@@ -5809,30 +7157,86 @@ export namespace Prisma {
     channelId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     users?: UserOrderByRelationAggregateInput
+    teams?: TeamOrderByRelationAggregateInput
     entries?: StandupEntryOrderByRelationAggregateInput
   }
 
-  export type TeamWhereUniqueInput = Prisma.AtLeast<{
+  export type WorkspaceWhereUniqueInput = Prisma.AtLeast<{
     id?: string
     slackTeamId?: string
-    AND?: TeamWhereInput | TeamWhereInput[]
-    OR?: TeamWhereInput[]
-    NOT?: TeamWhereInput | TeamWhereInput[]
-    name?: StringNullableFilter<"Team"> | string | null
-    timezone?: StringFilter<"Team"> | string
-    channelId?: StringNullableFilter<"Team"> | string | null
-    createdAt?: DateTimeFilter<"Team"> | Date | string
+    AND?: WorkspaceWhereInput | WorkspaceWhereInput[]
+    OR?: WorkspaceWhereInput[]
+    NOT?: WorkspaceWhereInput | WorkspaceWhereInput[]
+    name?: StringNullableFilter<"Workspace"> | string | null
+    timezone?: StringFilter<"Workspace"> | string
+    channelId?: StringNullableFilter<"Workspace"> | string | null
+    createdAt?: DateTimeFilter<"Workspace"> | Date | string
     users?: UserListRelationFilter
+    teams?: TeamListRelationFilter
     entries?: StandupEntryListRelationFilter
   }, "id" | "slackTeamId">
 
-  export type TeamOrderByWithAggregationInput = {
+  export type WorkspaceOrderByWithAggregationInput = {
     id?: SortOrder
     slackTeamId?: SortOrder
     name?: SortOrderInput | SortOrder
     timezone?: SortOrder
     channelId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    _count?: WorkspaceCountOrderByAggregateInput
+    _max?: WorkspaceMaxOrderByAggregateInput
+    _min?: WorkspaceMinOrderByAggregateInput
+  }
+
+  export type WorkspaceScalarWhereWithAggregatesInput = {
+    AND?: WorkspaceScalarWhereWithAggregatesInput | WorkspaceScalarWhereWithAggregatesInput[]
+    OR?: WorkspaceScalarWhereWithAggregatesInput[]
+    NOT?: WorkspaceScalarWhereWithAggregatesInput | WorkspaceScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Workspace"> | string
+    slackTeamId?: StringWithAggregatesFilter<"Workspace"> | string
+    name?: StringNullableWithAggregatesFilter<"Workspace"> | string | null
+    timezone?: StringWithAggregatesFilter<"Workspace"> | string
+    channelId?: StringNullableWithAggregatesFilter<"Workspace"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"Workspace"> | Date | string
+  }
+
+  export type TeamWhereInput = {
+    AND?: TeamWhereInput | TeamWhereInput[]
+    OR?: TeamWhereInput[]
+    NOT?: TeamWhereInput | TeamWhereInput[]
+    id?: StringFilter<"Team"> | string
+    name?: StringFilter<"Team"> | string
+    workspaceId?: StringFilter<"Team"> | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    users?: UserListRelationFilter
+    standupEntries?: StandupEntryListRelationFilter
+  }
+
+  export type TeamOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    workspaceId?: SortOrder
+    workspace?: WorkspaceOrderByWithRelationInput
+    users?: UserOrderByRelationAggregateInput
+    standupEntries?: StandupEntryOrderByRelationAggregateInput
+  }
+
+  export type TeamWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: TeamWhereInput | TeamWhereInput[]
+    OR?: TeamWhereInput[]
+    NOT?: TeamWhereInput | TeamWhereInput[]
+    name?: StringFilter<"Team"> | string
+    workspaceId?: StringFilter<"Team"> | string
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    users?: UserListRelationFilter
+    standupEntries?: StandupEntryListRelationFilter
+  }, "id">
+
+  export type TeamOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrder
+    workspaceId?: SortOrder
     _count?: TeamCountOrderByAggregateInput
     _max?: TeamMaxOrderByAggregateInput
     _min?: TeamMinOrderByAggregateInput
@@ -5843,11 +7247,8 @@ export namespace Prisma {
     OR?: TeamScalarWhereWithAggregatesInput[]
     NOT?: TeamScalarWhereWithAggregatesInput | TeamScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"Team"> | string
-    slackTeamId?: StringWithAggregatesFilter<"Team"> | string
-    name?: StringNullableWithAggregatesFilter<"Team"> | string | null
-    timezone?: StringWithAggregatesFilter<"Team"> | string
-    channelId?: StringNullableWithAggregatesFilter<"Team"> | string | null
-    createdAt?: DateTimeWithAggregatesFilter<"Team"> | Date | string
+    name?: StringWithAggregatesFilter<"Team"> | string
+    workspaceId?: StringWithAggregatesFilter<"Team"> | string
   }
 
   export type UserWhereInput = {
@@ -5858,10 +7259,12 @@ export namespace Prisma {
     slackUserId?: StringFilter<"User"> | string
     realName?: StringNullableFilter<"User"> | string | null
     displayName?: StringNullableFilter<"User"> | string | null
-    teamId?: StringFilter<"User"> | string
+    workspaceId?: StringFilter<"User"> | string
+    teamId?: StringNullableFilter<"User"> | string | null
     streak?: IntFilter<"User"> | number
     lastSubmit?: DateTimeNullableFilter<"User"> | Date | string | null
-    team?: XOR<TeamScalarRelationFilter, TeamWhereInput>
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     entries?: StandupEntryListRelationFilter
   }
 
@@ -5870,9 +7273,11 @@ export namespace Prisma {
     slackUserId?: SortOrder
     realName?: SortOrderInput | SortOrder
     displayName?: SortOrderInput | SortOrder
-    teamId?: SortOrder
+    workspaceId?: SortOrder
+    teamId?: SortOrderInput | SortOrder
     streak?: SortOrder
     lastSubmit?: SortOrderInput | SortOrder
+    workspace?: WorkspaceOrderByWithRelationInput
     team?: TeamOrderByWithRelationInput
     entries?: StandupEntryOrderByRelationAggregateInput
   }
@@ -5885,10 +7290,12 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     realName?: StringNullableFilter<"User"> | string | null
     displayName?: StringNullableFilter<"User"> | string | null
-    teamId?: StringFilter<"User"> | string
+    workspaceId?: StringFilter<"User"> | string
+    teamId?: StringNullableFilter<"User"> | string | null
     streak?: IntFilter<"User"> | number
     lastSubmit?: DateTimeNullableFilter<"User"> | Date | string | null
-    team?: XOR<TeamScalarRelationFilter, TeamWhereInput>
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
     entries?: StandupEntryListRelationFilter
   }, "id" | "slackUserId">
 
@@ -5897,7 +7304,8 @@ export namespace Prisma {
     slackUserId?: SortOrder
     realName?: SortOrderInput | SortOrder
     displayName?: SortOrderInput | SortOrder
-    teamId?: SortOrder
+    workspaceId?: SortOrder
+    teamId?: SortOrderInput | SortOrder
     streak?: SortOrder
     lastSubmit?: SortOrderInput | SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -5915,7 +7323,8 @@ export namespace Prisma {
     slackUserId?: StringWithAggregatesFilter<"User"> | string
     realName?: StringNullableWithAggregatesFilter<"User"> | string | null
     displayName?: StringNullableWithAggregatesFilter<"User"> | string | null
-    teamId?: StringWithAggregatesFilter<"User"> | string
+    workspaceId?: StringWithAggregatesFilter<"User"> | string
+    teamId?: StringNullableWithAggregatesFilter<"User"> | string | null
     streak?: IntWithAggregatesFilter<"User"> | number
     lastSubmit?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
   }
@@ -5927,27 +7336,31 @@ export namespace Prisma {
     id?: StringFilter<"StandupEntry"> | string
     date?: DateTimeFilter<"StandupEntry"> | Date | string
     userId?: StringFilter<"StandupEntry"> | string
-    teamId?: StringFilter<"StandupEntry"> | string
+    workspaceId?: StringFilter<"StandupEntry"> | string
+    teamId?: StringNullableFilter<"StandupEntry"> | string | null
     yesterday?: StringFilter<"StandupEntry"> | string
     today?: StringFilter<"StandupEntry"> | string
     blockers?: StringNullableFilter<"StandupEntry"> | string | null
     createdAt?: DateTimeFilter<"StandupEntry"> | Date | string
     updatedAt?: DateTimeFilter<"StandupEntry"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    team?: XOR<TeamScalarRelationFilter, TeamWhereInput>
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
   }
 
   export type StandupEntryOrderByWithRelationInput = {
     id?: SortOrder
     date?: SortOrder
     userId?: SortOrder
-    teamId?: SortOrder
+    workspaceId?: SortOrder
+    teamId?: SortOrderInput | SortOrder
     yesterday?: SortOrder
     today?: SortOrder
     blockers?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     user?: UserOrderByWithRelationInput
+    workspace?: WorkspaceOrderByWithRelationInput
     team?: TeamOrderByWithRelationInput
   }
 
@@ -5958,21 +7371,24 @@ export namespace Prisma {
     NOT?: StandupEntryWhereInput | StandupEntryWhereInput[]
     date?: DateTimeFilter<"StandupEntry"> | Date | string
     userId?: StringFilter<"StandupEntry"> | string
-    teamId?: StringFilter<"StandupEntry"> | string
+    workspaceId?: StringFilter<"StandupEntry"> | string
+    teamId?: StringNullableFilter<"StandupEntry"> | string | null
     yesterday?: StringFilter<"StandupEntry"> | string
     today?: StringFilter<"StandupEntry"> | string
     blockers?: StringNullableFilter<"StandupEntry"> | string | null
     createdAt?: DateTimeFilter<"StandupEntry"> | Date | string
     updatedAt?: DateTimeFilter<"StandupEntry"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
-    team?: XOR<TeamScalarRelationFilter, TeamWhereInput>
+    workspace?: XOR<WorkspaceScalarRelationFilter, WorkspaceWhereInput>
+    team?: XOR<TeamNullableScalarRelationFilter, TeamWhereInput> | null
   }, "id">
 
   export type StandupEntryOrderByWithAggregationInput = {
     id?: SortOrder
     date?: SortOrder
     userId?: SortOrder
-    teamId?: SortOrder
+    workspaceId?: SortOrder
+    teamId?: SortOrderInput | SortOrder
     yesterday?: SortOrder
     today?: SortOrder
     blockers?: SortOrderInput | SortOrder
@@ -5990,7 +7406,8 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"StandupEntry"> | string
     date?: DateTimeWithAggregatesFilter<"StandupEntry"> | Date | string
     userId?: StringWithAggregatesFilter<"StandupEntry"> | string
-    teamId?: StringWithAggregatesFilter<"StandupEntry"> | string
+    workspaceId?: StringWithAggregatesFilter<"StandupEntry"> | string
+    teamId?: StringNullableWithAggregatesFilter<"StandupEntry"> | string | null
     yesterday?: StringWithAggregatesFilter<"StandupEntry"> | string
     today?: StringWithAggregatesFilter<"StandupEntry"> | string
     blockers?: StringNullableWithAggregatesFilter<"StandupEntry"> | string | null
@@ -6004,7 +7421,7 @@ export namespace Prisma {
     NOT?: ParticipationSnapshotWhereInput | ParticipationSnapshotWhereInput[]
     id?: StringFilter<"ParticipationSnapshot"> | string
     weekOf?: DateTimeFilter<"ParticipationSnapshot"> | Date | string
-    teamId?: StringFilter<"ParticipationSnapshot"> | string
+    workspaceId?: StringFilter<"ParticipationSnapshot"> | string
     filled?: IntFilter<"ParticipationSnapshot"> | number
     missing?: IntFilter<"ParticipationSnapshot"> | number
     streakLeaders?: JsonFilter<"ParticipationSnapshot">
@@ -6015,7 +7432,7 @@ export namespace Prisma {
   export type ParticipationSnapshotOrderByWithRelationInput = {
     id?: SortOrder
     weekOf?: SortOrder
-    teamId?: SortOrder
+    workspaceId?: SortOrder
     filled?: SortOrder
     missing?: SortOrder
     streakLeaders?: SortOrder
@@ -6029,7 +7446,7 @@ export namespace Prisma {
     OR?: ParticipationSnapshotWhereInput[]
     NOT?: ParticipationSnapshotWhereInput | ParticipationSnapshotWhereInput[]
     weekOf?: DateTimeFilter<"ParticipationSnapshot"> | Date | string
-    teamId?: StringFilter<"ParticipationSnapshot"> | string
+    workspaceId?: StringFilter<"ParticipationSnapshot"> | string
     filled?: IntFilter<"ParticipationSnapshot"> | number
     missing?: IntFilter<"ParticipationSnapshot"> | number
     streakLeaders?: JsonFilter<"ParticipationSnapshot">
@@ -6040,7 +7457,7 @@ export namespace Prisma {
   export type ParticipationSnapshotOrderByWithAggregationInput = {
     id?: SortOrder
     weekOf?: SortOrder
-    teamId?: SortOrder
+    workspaceId?: SortOrder
     filled?: SortOrder
     missing?: SortOrder
     streakLeaders?: SortOrder
@@ -6059,7 +7476,7 @@ export namespace Prisma {
     NOT?: ParticipationSnapshotScalarWhereWithAggregatesInput | ParticipationSnapshotScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"ParticipationSnapshot"> | string
     weekOf?: DateTimeWithAggregatesFilter<"ParticipationSnapshot"> | Date | string
-    teamId?: StringWithAggregatesFilter<"ParticipationSnapshot"> | string
+    workspaceId?: StringWithAggregatesFilter<"ParticipationSnapshot"> | string
     filled?: IntWithAggregatesFilter<"ParticipationSnapshot"> | number
     missing?: IntWithAggregatesFilter<"ParticipationSnapshot"> | number
     streakLeaders?: JsonWithAggregatesFilter<"ParticipationSnapshot">
@@ -6067,75 +7484,128 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"ParticipationSnapshot"> | Date | string
   }
 
-  export type TeamCreateInput = {
+  export type WorkspaceCreateInput = {
     id?: string
     slackTeamId: string
     name?: string | null
     timezone?: string
     channelId?: string | null
     createdAt?: Date | string
+    users?: UserCreateNestedManyWithoutWorkspaceInput
+    teams?: TeamCreateNestedManyWithoutWorkspaceInput
+    entries?: StandupEntryCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateInput = {
+    id?: string
+    slackTeamId: string
+    name?: string | null
+    timezone?: string
+    channelId?: string | null
+    createdAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutWorkspaceInput
+    teams?: TeamUncheckedCreateNestedManyWithoutWorkspaceInput
+    entries?: StandupEntryUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackTeamId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutWorkspaceNestedInput
+    teams?: TeamUpdateManyWithoutWorkspaceNestedInput
+    entries?: StandupEntryUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackTeamId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutWorkspaceNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutWorkspaceNestedInput
+    entries?: StandupEntryUncheckedUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceCreateManyInput = {
+    id?: string
+    slackTeamId: string
+    name?: string | null
+    timezone?: string
+    channelId?: string | null
+    createdAt?: Date | string
+  }
+
+  export type WorkspaceUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackTeamId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type WorkspaceUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackTeamId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TeamCreateInput = {
+    id?: string
+    name: string
+    workspace: WorkspaceCreateNestedOneWithoutTeamsInput
     users?: UserCreateNestedManyWithoutTeamInput
-    entries?: StandupEntryCreateNestedManyWithoutTeamInput
+    standupEntries?: StandupEntryCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateInput = {
     id?: string
-    slackTeamId: string
-    name?: string | null
-    timezone?: string
-    channelId?: string | null
-    createdAt?: Date | string
+    name: string
+    workspaceId: string
     users?: UserUncheckedCreateNestedManyWithoutTeamInput
-    entries?: StandupEntryUncheckedCreateNestedManyWithoutTeamInput
+    standupEntries?: StandupEntryUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    slackTeamId?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    timezone?: StringFieldUpdateOperationsInput | string
-    channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutTeamsNestedInput
     users?: UserUpdateManyWithoutTeamNestedInput
-    entries?: StandupEntryUpdateManyWithoutTeamNestedInput
+    standupEntries?: StandupEntryUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
-    slackTeamId?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    timezone?: StringFieldUpdateOperationsInput | string
-    channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
     users?: UserUncheckedUpdateManyWithoutTeamNestedInput
-    entries?: StandupEntryUncheckedUpdateManyWithoutTeamNestedInput
+    standupEntries?: StandupEntryUncheckedUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamCreateManyInput = {
     id?: string
-    slackTeamId: string
-    name?: string | null
-    timezone?: string
-    channelId?: string | null
-    createdAt?: Date | string
+    name: string
+    workspaceId: string
   }
 
   export type TeamUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
-    slackTeamId?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    timezone?: StringFieldUpdateOperationsInput | string
-    channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
   }
 
   export type TeamUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
-    slackTeamId?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    timezone?: StringFieldUpdateOperationsInput | string
-    channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
   }
 
   export type UserCreateInput = {
@@ -6145,7 +7615,8 @@ export namespace Prisma {
     displayName?: string | null
     streak?: number
     lastSubmit?: Date | string | null
-    team: TeamCreateNestedOneWithoutUsersInput
+    workspace: WorkspaceCreateNestedOneWithoutUsersInput
+    team?: TeamCreateNestedOneWithoutUsersInput
     entries?: StandupEntryCreateNestedManyWithoutUserInput
   }
 
@@ -6154,7 +7625,8 @@ export namespace Prisma {
     slackUserId: string
     realName?: string | null
     displayName?: string | null
-    teamId: string
+    workspaceId: string
+    teamId?: string | null
     streak?: number
     lastSubmit?: Date | string | null
     entries?: StandupEntryUncheckedCreateNestedManyWithoutUserInput
@@ -6167,7 +7639,8 @@ export namespace Prisma {
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     streak?: IntFieldUpdateOperationsInput | number
     lastSubmit?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    team?: TeamUpdateOneRequiredWithoutUsersNestedInput
+    workspace?: WorkspaceUpdateOneRequiredWithoutUsersNestedInput
+    team?: TeamUpdateOneWithoutUsersNestedInput
     entries?: StandupEntryUpdateManyWithoutUserNestedInput
   }
 
@@ -6176,7 +7649,8 @@ export namespace Prisma {
     slackUserId?: StringFieldUpdateOperationsInput | string
     realName?: NullableStringFieldUpdateOperationsInput | string | null
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
-    teamId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
     streak?: IntFieldUpdateOperationsInput | number
     lastSubmit?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     entries?: StandupEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -6187,7 +7661,8 @@ export namespace Prisma {
     slackUserId: string
     realName?: string | null
     displayName?: string | null
-    teamId: string
+    workspaceId: string
+    teamId?: string | null
     streak?: number
     lastSubmit?: Date | string | null
   }
@@ -6206,7 +7681,8 @@ export namespace Prisma {
     slackUserId?: StringFieldUpdateOperationsInput | string
     realName?: NullableStringFieldUpdateOperationsInput | string | null
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
-    teamId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
     streak?: IntFieldUpdateOperationsInput | number
     lastSubmit?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -6220,14 +7696,16 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEntriesInput
-    team: TeamCreateNestedOneWithoutEntriesInput
+    workspace: WorkspaceCreateNestedOneWithoutEntriesInput
+    team?: TeamCreateNestedOneWithoutStandupEntriesInput
   }
 
   export type StandupEntryUncheckedCreateInput = {
     id?: string
     date: Date | string
     userId: string
-    teamId: string
+    workspaceId: string
+    teamId?: string | null
     yesterday: string
     today: string
     blockers?: string | null
@@ -6244,14 +7722,16 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEntriesNestedInput
-    team?: TeamUpdateOneRequiredWithoutEntriesNestedInput
+    workspace?: WorkspaceUpdateOneRequiredWithoutEntriesNestedInput
+    team?: TeamUpdateOneWithoutStandupEntriesNestedInput
   }
 
   export type StandupEntryUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
     yesterday?: StringFieldUpdateOperationsInput | string
     today?: StringFieldUpdateOperationsInput | string
     blockers?: NullableStringFieldUpdateOperationsInput | string | null
@@ -6263,7 +7743,8 @@ export namespace Prisma {
     id?: string
     date: Date | string
     userId: string
-    teamId: string
+    workspaceId: string
+    teamId?: string | null
     yesterday: string
     today: string
     blockers?: string | null
@@ -6285,7 +7766,8 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
     yesterday?: StringFieldUpdateOperationsInput | string
     today?: StringFieldUpdateOperationsInput | string
     blockers?: NullableStringFieldUpdateOperationsInput | string | null
@@ -6296,7 +7778,7 @@ export namespace Prisma {
   export type ParticipationSnapshotCreateInput = {
     id?: string
     weekOf: Date | string
-    teamId: string
+    workspaceId: string
     filled: number
     missing: number
     streakLeaders: JsonNullValueInput | InputJsonValue
@@ -6307,7 +7789,7 @@ export namespace Prisma {
   export type ParticipationSnapshotUncheckedCreateInput = {
     id?: string
     weekOf: Date | string
-    teamId: string
+    workspaceId: string
     filled: number
     missing: number
     streakLeaders: JsonNullValueInput | InputJsonValue
@@ -6318,7 +7800,7 @@ export namespace Prisma {
   export type ParticipationSnapshotUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     weekOf?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
     filled?: IntFieldUpdateOperationsInput | number
     missing?: IntFieldUpdateOperationsInput | number
     streakLeaders?: JsonNullValueInput | InputJsonValue
@@ -6329,7 +7811,7 @@ export namespace Prisma {
   export type ParticipationSnapshotUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     weekOf?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
     filled?: IntFieldUpdateOperationsInput | number
     missing?: IntFieldUpdateOperationsInput | number
     streakLeaders?: JsonNullValueInput | InputJsonValue
@@ -6340,7 +7822,7 @@ export namespace Prisma {
   export type ParticipationSnapshotCreateManyInput = {
     id?: string
     weekOf: Date | string
-    teamId: string
+    workspaceId: string
     filled: number
     missing: number
     streakLeaders: JsonNullValueInput | InputJsonValue
@@ -6351,7 +7833,7 @@ export namespace Prisma {
   export type ParticipationSnapshotUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     weekOf?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
     filled?: IntFieldUpdateOperationsInput | number
     missing?: IntFieldUpdateOperationsInput | number
     streakLeaders?: JsonNullValueInput | InputJsonValue
@@ -6362,7 +7844,7 @@ export namespace Prisma {
   export type ParticipationSnapshotUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     weekOf?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
     filled?: IntFieldUpdateOperationsInput | number
     missing?: IntFieldUpdateOperationsInput | number
     streakLeaders?: JsonNullValueInput | InputJsonValue
@@ -6415,6 +7897,12 @@ export namespace Prisma {
     none?: UserWhereInput
   }
 
+  export type TeamListRelationFilter = {
+    every?: TeamWhereInput
+    some?: TeamWhereInput
+    none?: TeamWhereInput
+  }
+
   export type StandupEntryListRelationFilter = {
     every?: StandupEntryWhereInput
     some?: StandupEntryWhereInput
@@ -6430,11 +7918,15 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type TeamOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type StandupEntryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
-  export type TeamCountOrderByAggregateInput = {
+  export type WorkspaceCountOrderByAggregateInput = {
     id?: SortOrder
     slackTeamId?: SortOrder
     name?: SortOrder
@@ -6443,7 +7935,7 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
-  export type TeamMaxOrderByAggregateInput = {
+  export type WorkspaceMaxOrderByAggregateInput = {
     id?: SortOrder
     slackTeamId?: SortOrder
     name?: SortOrder
@@ -6452,7 +7944,7 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
-  export type TeamMinOrderByAggregateInput = {
+  export type WorkspaceMinOrderByAggregateInput = {
     id?: SortOrder
     slackTeamId?: SortOrder
     name?: SortOrder
@@ -6509,6 +8001,29 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type WorkspaceScalarRelationFilter = {
+    is?: WorkspaceWhereInput
+    isNot?: WorkspaceWhereInput
+  }
+
+  export type TeamCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    workspaceId?: SortOrder
+  }
+
+  export type TeamMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    workspaceId?: SortOrder
+  }
+
+  export type TeamMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    workspaceId?: SortOrder
+  }
+
   export type IntFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[]
@@ -6531,9 +8046,9 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
-  export type TeamScalarRelationFilter = {
-    is?: TeamWhereInput
-    isNot?: TeamWhereInput
+  export type TeamNullableScalarRelationFilter = {
+    is?: TeamWhereInput | null
+    isNot?: TeamWhereInput | null
   }
 
   export type UserCountOrderByAggregateInput = {
@@ -6541,6 +8056,7 @@ export namespace Prisma {
     slackUserId?: SortOrder
     realName?: SortOrder
     displayName?: SortOrder
+    workspaceId?: SortOrder
     teamId?: SortOrder
     streak?: SortOrder
     lastSubmit?: SortOrder
@@ -6555,6 +8071,7 @@ export namespace Prisma {
     slackUserId?: SortOrder
     realName?: SortOrder
     displayName?: SortOrder
+    workspaceId?: SortOrder
     teamId?: SortOrder
     streak?: SortOrder
     lastSubmit?: SortOrder
@@ -6565,6 +8082,7 @@ export namespace Prisma {
     slackUserId?: SortOrder
     realName?: SortOrder
     displayName?: SortOrder
+    workspaceId?: SortOrder
     teamId?: SortOrder
     streak?: SortOrder
     lastSubmit?: SortOrder
@@ -6613,6 +8131,7 @@ export namespace Prisma {
     id?: SortOrder
     date?: SortOrder
     userId?: SortOrder
+    workspaceId?: SortOrder
     teamId?: SortOrder
     yesterday?: SortOrder
     today?: SortOrder
@@ -6625,6 +8144,7 @@ export namespace Prisma {
     id?: SortOrder
     date?: SortOrder
     userId?: SortOrder
+    workspaceId?: SortOrder
     teamId?: SortOrder
     yesterday?: SortOrder
     today?: SortOrder
@@ -6637,6 +8157,7 @@ export namespace Prisma {
     id?: SortOrder
     date?: SortOrder
     userId?: SortOrder
+    workspaceId?: SortOrder
     teamId?: SortOrder
     yesterday?: SortOrder
     today?: SortOrder
@@ -6666,7 +8187,7 @@ export namespace Prisma {
   export type ParticipationSnapshotCountOrderByAggregateInput = {
     id?: SortOrder
     weekOf?: SortOrder
-    teamId?: SortOrder
+    workspaceId?: SortOrder
     filled?: SortOrder
     missing?: SortOrder
     streakLeaders?: SortOrder
@@ -6682,7 +8203,7 @@ export namespace Prisma {
   export type ParticipationSnapshotMaxOrderByAggregateInput = {
     id?: SortOrder
     weekOf?: SortOrder
-    teamId?: SortOrder
+    workspaceId?: SortOrder
     filled?: SortOrder
     missing?: SortOrder
     createdAt?: SortOrder
@@ -6691,7 +8212,7 @@ export namespace Prisma {
   export type ParticipationSnapshotMinOrderByAggregateInput = {
     id?: SortOrder
     weekOf?: SortOrder
-    teamId?: SortOrder
+    workspaceId?: SortOrder
     filled?: SortOrder
     missing?: SortOrder
     createdAt?: SortOrder
@@ -6723,6 +8244,150 @@ export namespace Prisma {
     _max?: NestedJsonFilter<$PrismaModel>
   }
 
+  export type UserCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<UserCreateWithoutWorkspaceInput, UserUncheckedCreateWithoutWorkspaceInput> | UserCreateWithoutWorkspaceInput[] | UserUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutWorkspaceInput | UserCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: UserCreateManyWorkspaceInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type TeamCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<TeamCreateWithoutWorkspaceInput, TeamUncheckedCreateWithoutWorkspaceInput> | TeamCreateWithoutWorkspaceInput[] | TeamUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: TeamCreateOrConnectWithoutWorkspaceInput | TeamCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: TeamCreateManyWorkspaceInputEnvelope
+    connect?: TeamWhereUniqueInput | TeamWhereUniqueInput[]
+  }
+
+  export type StandupEntryCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<StandupEntryCreateWithoutWorkspaceInput, StandupEntryUncheckedCreateWithoutWorkspaceInput> | StandupEntryCreateWithoutWorkspaceInput[] | StandupEntryUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: StandupEntryCreateOrConnectWithoutWorkspaceInput | StandupEntryCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: StandupEntryCreateManyWorkspaceInputEnvelope
+    connect?: StandupEntryWhereUniqueInput | StandupEntryWhereUniqueInput[]
+  }
+
+  export type UserUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<UserCreateWithoutWorkspaceInput, UserUncheckedCreateWithoutWorkspaceInput> | UserCreateWithoutWorkspaceInput[] | UserUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutWorkspaceInput | UserCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: UserCreateManyWorkspaceInputEnvelope
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+  }
+
+  export type TeamUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<TeamCreateWithoutWorkspaceInput, TeamUncheckedCreateWithoutWorkspaceInput> | TeamCreateWithoutWorkspaceInput[] | TeamUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: TeamCreateOrConnectWithoutWorkspaceInput | TeamCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: TeamCreateManyWorkspaceInputEnvelope
+    connect?: TeamWhereUniqueInput | TeamWhereUniqueInput[]
+  }
+
+  export type StandupEntryUncheckedCreateNestedManyWithoutWorkspaceInput = {
+    create?: XOR<StandupEntryCreateWithoutWorkspaceInput, StandupEntryUncheckedCreateWithoutWorkspaceInput> | StandupEntryCreateWithoutWorkspaceInput[] | StandupEntryUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: StandupEntryCreateOrConnectWithoutWorkspaceInput | StandupEntryCreateOrConnectWithoutWorkspaceInput[]
+    createMany?: StandupEntryCreateManyWorkspaceInputEnvelope
+    connect?: StandupEntryWhereUniqueInput | StandupEntryWhereUniqueInput[]
+  }
+
+  export type StringFieldUpdateOperationsInput = {
+    set?: string
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
+  }
+
+  export type UserUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<UserCreateWithoutWorkspaceInput, UserUncheckedCreateWithoutWorkspaceInput> | UserCreateWithoutWorkspaceInput[] | UserUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutWorkspaceInput | UserCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutWorkspaceInput | UserUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: UserCreateManyWorkspaceInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutWorkspaceInput | UserUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutWorkspaceInput | UserUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type TeamUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<TeamCreateWithoutWorkspaceInput, TeamUncheckedCreateWithoutWorkspaceInput> | TeamCreateWithoutWorkspaceInput[] | TeamUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: TeamCreateOrConnectWithoutWorkspaceInput | TeamCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: TeamUpsertWithWhereUniqueWithoutWorkspaceInput | TeamUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: TeamCreateManyWorkspaceInputEnvelope
+    set?: TeamWhereUniqueInput | TeamWhereUniqueInput[]
+    disconnect?: TeamWhereUniqueInput | TeamWhereUniqueInput[]
+    delete?: TeamWhereUniqueInput | TeamWhereUniqueInput[]
+    connect?: TeamWhereUniqueInput | TeamWhereUniqueInput[]
+    update?: TeamUpdateWithWhereUniqueWithoutWorkspaceInput | TeamUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: TeamUpdateManyWithWhereWithoutWorkspaceInput | TeamUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: TeamScalarWhereInput | TeamScalarWhereInput[]
+  }
+
+  export type StandupEntryUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<StandupEntryCreateWithoutWorkspaceInput, StandupEntryUncheckedCreateWithoutWorkspaceInput> | StandupEntryCreateWithoutWorkspaceInput[] | StandupEntryUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: StandupEntryCreateOrConnectWithoutWorkspaceInput | StandupEntryCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: StandupEntryUpsertWithWhereUniqueWithoutWorkspaceInput | StandupEntryUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: StandupEntryCreateManyWorkspaceInputEnvelope
+    set?: StandupEntryWhereUniqueInput | StandupEntryWhereUniqueInput[]
+    disconnect?: StandupEntryWhereUniqueInput | StandupEntryWhereUniqueInput[]
+    delete?: StandupEntryWhereUniqueInput | StandupEntryWhereUniqueInput[]
+    connect?: StandupEntryWhereUniqueInput | StandupEntryWhereUniqueInput[]
+    update?: StandupEntryUpdateWithWhereUniqueWithoutWorkspaceInput | StandupEntryUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: StandupEntryUpdateManyWithWhereWithoutWorkspaceInput | StandupEntryUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: StandupEntryScalarWhereInput | StandupEntryScalarWhereInput[]
+  }
+
+  export type UserUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<UserCreateWithoutWorkspaceInput, UserUncheckedCreateWithoutWorkspaceInput> | UserCreateWithoutWorkspaceInput[] | UserUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: UserCreateOrConnectWithoutWorkspaceInput | UserCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: UserUpsertWithWhereUniqueWithoutWorkspaceInput | UserUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: UserCreateManyWorkspaceInputEnvelope
+    set?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    disconnect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    delete?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    connect?: UserWhereUniqueInput | UserWhereUniqueInput[]
+    update?: UserUpdateWithWhereUniqueWithoutWorkspaceInput | UserUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: UserUpdateManyWithWhereWithoutWorkspaceInput | UserUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: UserScalarWhereInput | UserScalarWhereInput[]
+  }
+
+  export type TeamUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<TeamCreateWithoutWorkspaceInput, TeamUncheckedCreateWithoutWorkspaceInput> | TeamCreateWithoutWorkspaceInput[] | TeamUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: TeamCreateOrConnectWithoutWorkspaceInput | TeamCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: TeamUpsertWithWhereUniqueWithoutWorkspaceInput | TeamUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: TeamCreateManyWorkspaceInputEnvelope
+    set?: TeamWhereUniqueInput | TeamWhereUniqueInput[]
+    disconnect?: TeamWhereUniqueInput | TeamWhereUniqueInput[]
+    delete?: TeamWhereUniqueInput | TeamWhereUniqueInput[]
+    connect?: TeamWhereUniqueInput | TeamWhereUniqueInput[]
+    update?: TeamUpdateWithWhereUniqueWithoutWorkspaceInput | TeamUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: TeamUpdateManyWithWhereWithoutWorkspaceInput | TeamUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: TeamScalarWhereInput | TeamScalarWhereInput[]
+  }
+
+  export type StandupEntryUncheckedUpdateManyWithoutWorkspaceNestedInput = {
+    create?: XOR<StandupEntryCreateWithoutWorkspaceInput, StandupEntryUncheckedCreateWithoutWorkspaceInput> | StandupEntryCreateWithoutWorkspaceInput[] | StandupEntryUncheckedCreateWithoutWorkspaceInput[]
+    connectOrCreate?: StandupEntryCreateOrConnectWithoutWorkspaceInput | StandupEntryCreateOrConnectWithoutWorkspaceInput[]
+    upsert?: StandupEntryUpsertWithWhereUniqueWithoutWorkspaceInput | StandupEntryUpsertWithWhereUniqueWithoutWorkspaceInput[]
+    createMany?: StandupEntryCreateManyWorkspaceInputEnvelope
+    set?: StandupEntryWhereUniqueInput | StandupEntryWhereUniqueInput[]
+    disconnect?: StandupEntryWhereUniqueInput | StandupEntryWhereUniqueInput[]
+    delete?: StandupEntryWhereUniqueInput | StandupEntryWhereUniqueInput[]
+    connect?: StandupEntryWhereUniqueInput | StandupEntryWhereUniqueInput[]
+    update?: StandupEntryUpdateWithWhereUniqueWithoutWorkspaceInput | StandupEntryUpdateWithWhereUniqueWithoutWorkspaceInput[]
+    updateMany?: StandupEntryUpdateManyWithWhereWithoutWorkspaceInput | StandupEntryUpdateManyWithWhereWithoutWorkspaceInput[]
+    deleteMany?: StandupEntryScalarWhereInput | StandupEntryScalarWhereInput[]
+  }
+
+  export type WorkspaceCreateNestedOneWithoutTeamsInput = {
+    create?: XOR<WorkspaceCreateWithoutTeamsInput, WorkspaceUncheckedCreateWithoutTeamsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutTeamsInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
   export type UserCreateNestedManyWithoutTeamInput = {
     create?: XOR<UserCreateWithoutTeamInput, UserUncheckedCreateWithoutTeamInput> | UserCreateWithoutTeamInput[] | UserUncheckedCreateWithoutTeamInput[]
     connectOrCreate?: UserCreateOrConnectWithoutTeamInput | UserCreateOrConnectWithoutTeamInput[]
@@ -6751,16 +8416,12 @@ export namespace Prisma {
     connect?: StandupEntryWhereUniqueInput | StandupEntryWhereUniqueInput[]
   }
 
-  export type StringFieldUpdateOperationsInput = {
-    set?: string
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
-  }
-
-  export type DateTimeFieldUpdateOperationsInput = {
-    set?: Date | string
+  export type WorkspaceUpdateOneRequiredWithoutTeamsNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutTeamsInput, WorkspaceUncheckedCreateWithoutTeamsInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutTeamsInput
+    upsert?: WorkspaceUpsertWithoutTeamsInput
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutTeamsInput, WorkspaceUpdateWithoutTeamsInput>, WorkspaceUncheckedUpdateWithoutTeamsInput>
   }
 
   export type UserUpdateManyWithoutTeamNestedInput = {
@@ -6819,6 +8480,12 @@ export namespace Prisma {
     deleteMany?: StandupEntryScalarWhereInput | StandupEntryScalarWhereInput[]
   }
 
+  export type WorkspaceCreateNestedOneWithoutUsersInput = {
+    create?: XOR<WorkspaceCreateWithoutUsersInput, WorkspaceUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutUsersInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
   export type TeamCreateNestedOneWithoutUsersInput = {
     create?: XOR<TeamCreateWithoutUsersInput, TeamUncheckedCreateWithoutUsersInput>
     connectOrCreate?: TeamCreateOrConnectWithoutUsersInput
@@ -6851,10 +8518,20 @@ export namespace Prisma {
     set?: Date | string | null
   }
 
-  export type TeamUpdateOneRequiredWithoutUsersNestedInput = {
+  export type WorkspaceUpdateOneRequiredWithoutUsersNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutUsersInput, WorkspaceUncheckedCreateWithoutUsersInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutUsersInput
+    upsert?: WorkspaceUpsertWithoutUsersInput
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutUsersInput, WorkspaceUpdateWithoutUsersInput>, WorkspaceUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type TeamUpdateOneWithoutUsersNestedInput = {
     create?: XOR<TeamCreateWithoutUsersInput, TeamUncheckedCreateWithoutUsersInput>
     connectOrCreate?: TeamCreateOrConnectWithoutUsersInput
     upsert?: TeamUpsertWithoutUsersInput
+    disconnect?: TeamWhereInput | boolean
+    delete?: TeamWhereInput | boolean
     connect?: TeamWhereUniqueInput
     update?: XOR<XOR<TeamUpdateToOneWithWhereWithoutUsersInput, TeamUpdateWithoutUsersInput>, TeamUncheckedUpdateWithoutUsersInput>
   }
@@ -6893,9 +8570,15 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type TeamCreateNestedOneWithoutEntriesInput = {
-    create?: XOR<TeamCreateWithoutEntriesInput, TeamUncheckedCreateWithoutEntriesInput>
-    connectOrCreate?: TeamCreateOrConnectWithoutEntriesInput
+  export type WorkspaceCreateNestedOneWithoutEntriesInput = {
+    create?: XOR<WorkspaceCreateWithoutEntriesInput, WorkspaceUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutEntriesInput
+    connect?: WorkspaceWhereUniqueInput
+  }
+
+  export type TeamCreateNestedOneWithoutStandupEntriesInput = {
+    create?: XOR<TeamCreateWithoutStandupEntriesInput, TeamUncheckedCreateWithoutStandupEntriesInput>
+    connectOrCreate?: TeamCreateOrConnectWithoutStandupEntriesInput
     connect?: TeamWhereUniqueInput
   }
 
@@ -6907,12 +8590,22 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutEntriesInput, UserUpdateWithoutEntriesInput>, UserUncheckedUpdateWithoutEntriesInput>
   }
 
-  export type TeamUpdateOneRequiredWithoutEntriesNestedInput = {
-    create?: XOR<TeamCreateWithoutEntriesInput, TeamUncheckedCreateWithoutEntriesInput>
-    connectOrCreate?: TeamCreateOrConnectWithoutEntriesInput
-    upsert?: TeamUpsertWithoutEntriesInput
+  export type WorkspaceUpdateOneRequiredWithoutEntriesNestedInput = {
+    create?: XOR<WorkspaceCreateWithoutEntriesInput, WorkspaceUncheckedCreateWithoutEntriesInput>
+    connectOrCreate?: WorkspaceCreateOrConnectWithoutEntriesInput
+    upsert?: WorkspaceUpsertWithoutEntriesInput
+    connect?: WorkspaceWhereUniqueInput
+    update?: XOR<XOR<WorkspaceUpdateToOneWithWhereWithoutEntriesInput, WorkspaceUpdateWithoutEntriesInput>, WorkspaceUncheckedUpdateWithoutEntriesInput>
+  }
+
+  export type TeamUpdateOneWithoutStandupEntriesNestedInput = {
+    create?: XOR<TeamCreateWithoutStandupEntriesInput, TeamUncheckedCreateWithoutStandupEntriesInput>
+    connectOrCreate?: TeamCreateOrConnectWithoutStandupEntriesInput
+    upsert?: TeamUpsertWithoutStandupEntriesInput
+    disconnect?: TeamWhereInput | boolean
+    delete?: TeamWhereInput | boolean
     connect?: TeamWhereUniqueInput
-    update?: XOR<XOR<TeamUpdateToOneWithWhereWithoutEntriesInput, TeamUpdateWithoutEntriesInput>, TeamUncheckedUpdateWithoutEntriesInput>
+    update?: XOR<XOR<TeamUpdateToOneWithWhereWithoutStandupEntriesInput, TeamUpdateWithoutStandupEntriesInput>, TeamUncheckedUpdateWithoutStandupEntriesInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -7094,6 +8787,207 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type UserCreateWithoutWorkspaceInput = {
+    id?: string
+    slackUserId: string
+    realName?: string | null
+    displayName?: string | null
+    streak?: number
+    lastSubmit?: Date | string | null
+    team?: TeamCreateNestedOneWithoutUsersInput
+    entries?: StandupEntryCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutWorkspaceInput = {
+    id?: string
+    slackUserId: string
+    realName?: string | null
+    displayName?: string | null
+    teamId?: string | null
+    streak?: number
+    lastSubmit?: Date | string | null
+    entries?: StandupEntryUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutWorkspaceInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutWorkspaceInput, UserUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type UserCreateManyWorkspaceInputEnvelope = {
+    data: UserCreateManyWorkspaceInput | UserCreateManyWorkspaceInput[]
+  }
+
+  export type TeamCreateWithoutWorkspaceInput = {
+    id?: string
+    name: string
+    users?: UserCreateNestedManyWithoutTeamInput
+    standupEntries?: StandupEntryCreateNestedManyWithoutTeamInput
+  }
+
+  export type TeamUncheckedCreateWithoutWorkspaceInput = {
+    id?: string
+    name: string
+    users?: UserUncheckedCreateNestedManyWithoutTeamInput
+    standupEntries?: StandupEntryUncheckedCreateNestedManyWithoutTeamInput
+  }
+
+  export type TeamCreateOrConnectWithoutWorkspaceInput = {
+    where: TeamWhereUniqueInput
+    create: XOR<TeamCreateWithoutWorkspaceInput, TeamUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type TeamCreateManyWorkspaceInputEnvelope = {
+    data: TeamCreateManyWorkspaceInput | TeamCreateManyWorkspaceInput[]
+  }
+
+  export type StandupEntryCreateWithoutWorkspaceInput = {
+    id?: string
+    date: Date | string
+    yesterday: string
+    today: string
+    blockers?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutEntriesInput
+    team?: TeamCreateNestedOneWithoutStandupEntriesInput
+  }
+
+  export type StandupEntryUncheckedCreateWithoutWorkspaceInput = {
+    id?: string
+    date: Date | string
+    userId: string
+    teamId?: string | null
+    yesterday: string
+    today: string
+    blockers?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type StandupEntryCreateOrConnectWithoutWorkspaceInput = {
+    where: StandupEntryWhereUniqueInput
+    create: XOR<StandupEntryCreateWithoutWorkspaceInput, StandupEntryUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type StandupEntryCreateManyWorkspaceInputEnvelope = {
+    data: StandupEntryCreateManyWorkspaceInput | StandupEntryCreateManyWorkspaceInput[]
+  }
+
+  export type UserUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: UserWhereUniqueInput
+    update: XOR<UserUpdateWithoutWorkspaceInput, UserUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<UserCreateWithoutWorkspaceInput, UserUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type UserUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: UserWhereUniqueInput
+    data: XOR<UserUpdateWithoutWorkspaceInput, UserUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type UserUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: UserScalarWhereInput
+    data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
+  export type UserScalarWhereInput = {
+    AND?: UserScalarWhereInput | UserScalarWhereInput[]
+    OR?: UserScalarWhereInput[]
+    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
+    id?: StringFilter<"User"> | string
+    slackUserId?: StringFilter<"User"> | string
+    realName?: StringNullableFilter<"User"> | string | null
+    displayName?: StringNullableFilter<"User"> | string | null
+    workspaceId?: StringFilter<"User"> | string
+    teamId?: StringNullableFilter<"User"> | string | null
+    streak?: IntFilter<"User"> | number
+    lastSubmit?: DateTimeNullableFilter<"User"> | Date | string | null
+  }
+
+  export type TeamUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: TeamWhereUniqueInput
+    update: XOR<TeamUpdateWithoutWorkspaceInput, TeamUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<TeamCreateWithoutWorkspaceInput, TeamUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type TeamUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: TeamWhereUniqueInput
+    data: XOR<TeamUpdateWithoutWorkspaceInput, TeamUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type TeamUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: TeamScalarWhereInput
+    data: XOR<TeamUpdateManyMutationInput, TeamUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
+  export type TeamScalarWhereInput = {
+    AND?: TeamScalarWhereInput | TeamScalarWhereInput[]
+    OR?: TeamScalarWhereInput[]
+    NOT?: TeamScalarWhereInput | TeamScalarWhereInput[]
+    id?: StringFilter<"Team"> | string
+    name?: StringFilter<"Team"> | string
+    workspaceId?: StringFilter<"Team"> | string
+  }
+
+  export type StandupEntryUpsertWithWhereUniqueWithoutWorkspaceInput = {
+    where: StandupEntryWhereUniqueInput
+    update: XOR<StandupEntryUpdateWithoutWorkspaceInput, StandupEntryUncheckedUpdateWithoutWorkspaceInput>
+    create: XOR<StandupEntryCreateWithoutWorkspaceInput, StandupEntryUncheckedCreateWithoutWorkspaceInput>
+  }
+
+  export type StandupEntryUpdateWithWhereUniqueWithoutWorkspaceInput = {
+    where: StandupEntryWhereUniqueInput
+    data: XOR<StandupEntryUpdateWithoutWorkspaceInput, StandupEntryUncheckedUpdateWithoutWorkspaceInput>
+  }
+
+  export type StandupEntryUpdateManyWithWhereWithoutWorkspaceInput = {
+    where: StandupEntryScalarWhereInput
+    data: XOR<StandupEntryUpdateManyMutationInput, StandupEntryUncheckedUpdateManyWithoutWorkspaceInput>
+  }
+
+  export type StandupEntryScalarWhereInput = {
+    AND?: StandupEntryScalarWhereInput | StandupEntryScalarWhereInput[]
+    OR?: StandupEntryScalarWhereInput[]
+    NOT?: StandupEntryScalarWhereInput | StandupEntryScalarWhereInput[]
+    id?: StringFilter<"StandupEntry"> | string
+    date?: DateTimeFilter<"StandupEntry"> | Date | string
+    userId?: StringFilter<"StandupEntry"> | string
+    workspaceId?: StringFilter<"StandupEntry"> | string
+    teamId?: StringNullableFilter<"StandupEntry"> | string | null
+    yesterday?: StringFilter<"StandupEntry"> | string
+    today?: StringFilter<"StandupEntry"> | string
+    blockers?: StringNullableFilter<"StandupEntry"> | string | null
+    createdAt?: DateTimeFilter<"StandupEntry"> | Date | string
+    updatedAt?: DateTimeFilter<"StandupEntry"> | Date | string
+  }
+
+  export type WorkspaceCreateWithoutTeamsInput = {
+    id?: string
+    slackTeamId: string
+    name?: string | null
+    timezone?: string
+    channelId?: string | null
+    createdAt?: Date | string
+    users?: UserCreateNestedManyWithoutWorkspaceInput
+    entries?: StandupEntryCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutTeamsInput = {
+    id?: string
+    slackTeamId: string
+    name?: string | null
+    timezone?: string
+    channelId?: string | null
+    createdAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutWorkspaceInput
+    entries?: StandupEntryUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutTeamsInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutTeamsInput, WorkspaceUncheckedCreateWithoutTeamsInput>
+  }
+
   export type UserCreateWithoutTeamInput = {
     id?: string
     slackUserId: string
@@ -7101,6 +8995,7 @@ export namespace Prisma {
     displayName?: string | null
     streak?: number
     lastSubmit?: Date | string | null
+    workspace: WorkspaceCreateNestedOneWithoutUsersInput
     entries?: StandupEntryCreateNestedManyWithoutUserInput
   }
 
@@ -7109,6 +9004,7 @@ export namespace Prisma {
     slackUserId: string
     realName?: string | null
     displayName?: string | null
+    workspaceId: string
     streak?: number
     lastSubmit?: Date | string | null
     entries?: StandupEntryUncheckedCreateNestedManyWithoutUserInput
@@ -7132,12 +9028,14 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     user: UserCreateNestedOneWithoutEntriesInput
+    workspace: WorkspaceCreateNestedOneWithoutEntriesInput
   }
 
   export type StandupEntryUncheckedCreateWithoutTeamInput = {
     id?: string
     date: Date | string
     userId: string
+    workspaceId: string
     yesterday: string
     today: string
     blockers?: string | null
@@ -7152,6 +9050,39 @@ export namespace Prisma {
 
   export type StandupEntryCreateManyTeamInputEnvelope = {
     data: StandupEntryCreateManyTeamInput | StandupEntryCreateManyTeamInput[]
+  }
+
+  export type WorkspaceUpsertWithoutTeamsInput = {
+    update: XOR<WorkspaceUpdateWithoutTeamsInput, WorkspaceUncheckedUpdateWithoutTeamsInput>
+    create: XOR<WorkspaceCreateWithoutTeamsInput, WorkspaceUncheckedCreateWithoutTeamsInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutTeamsInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutTeamsInput, WorkspaceUncheckedUpdateWithoutTeamsInput>
+  }
+
+  export type WorkspaceUpdateWithoutTeamsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackTeamId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutWorkspaceNestedInput
+    entries?: StandupEntryUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutTeamsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackTeamId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutWorkspaceNestedInput
+    entries?: StandupEntryUncheckedUpdateManyWithoutWorkspaceNestedInput
   }
 
   export type UserUpsertWithWhereUniqueWithoutTeamInput = {
@@ -7170,19 +9101,6 @@ export namespace Prisma {
     data: XOR<UserUpdateManyMutationInput, UserUncheckedUpdateManyWithoutTeamInput>
   }
 
-  export type UserScalarWhereInput = {
-    AND?: UserScalarWhereInput | UserScalarWhereInput[]
-    OR?: UserScalarWhereInput[]
-    NOT?: UserScalarWhereInput | UserScalarWhereInput[]
-    id?: StringFilter<"User"> | string
-    slackUserId?: StringFilter<"User"> | string
-    realName?: StringNullableFilter<"User"> | string | null
-    displayName?: StringNullableFilter<"User"> | string | null
-    teamId?: StringFilter<"User"> | string
-    streak?: IntFilter<"User"> | number
-    lastSubmit?: DateTimeNullableFilter<"User"> | Date | string | null
-  }
-
   export type StandupEntryUpsertWithWhereUniqueWithoutTeamInput = {
     where: StandupEntryWhereUniqueInput
     update: XOR<StandupEntryUpdateWithoutTeamInput, StandupEntryUncheckedUpdateWithoutTeamInput>
@@ -7199,39 +9117,45 @@ export namespace Prisma {
     data: XOR<StandupEntryUpdateManyMutationInput, StandupEntryUncheckedUpdateManyWithoutTeamInput>
   }
 
-  export type StandupEntryScalarWhereInput = {
-    AND?: StandupEntryScalarWhereInput | StandupEntryScalarWhereInput[]
-    OR?: StandupEntryScalarWhereInput[]
-    NOT?: StandupEntryScalarWhereInput | StandupEntryScalarWhereInput[]
-    id?: StringFilter<"StandupEntry"> | string
-    date?: DateTimeFilter<"StandupEntry"> | Date | string
-    userId?: StringFilter<"StandupEntry"> | string
-    teamId?: StringFilter<"StandupEntry"> | string
-    yesterday?: StringFilter<"StandupEntry"> | string
-    today?: StringFilter<"StandupEntry"> | string
-    blockers?: StringNullableFilter<"StandupEntry"> | string | null
-    createdAt?: DateTimeFilter<"StandupEntry"> | Date | string
-    updatedAt?: DateTimeFilter<"StandupEntry"> | Date | string
+  export type WorkspaceCreateWithoutUsersInput = {
+    id?: string
+    slackTeamId: string
+    name?: string | null
+    timezone?: string
+    channelId?: string | null
+    createdAt?: Date | string
+    teams?: TeamCreateNestedManyWithoutWorkspaceInput
+    entries?: StandupEntryCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutUsersInput = {
+    id?: string
+    slackTeamId: string
+    name?: string | null
+    timezone?: string
+    channelId?: string | null
+    createdAt?: Date | string
+    teams?: TeamUncheckedCreateNestedManyWithoutWorkspaceInput
+    entries?: StandupEntryUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutUsersInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutUsersInput, WorkspaceUncheckedCreateWithoutUsersInput>
   }
 
   export type TeamCreateWithoutUsersInput = {
     id?: string
-    slackTeamId: string
-    name?: string | null
-    timezone?: string
-    channelId?: string | null
-    createdAt?: Date | string
-    entries?: StandupEntryCreateNestedManyWithoutTeamInput
+    name: string
+    workspace: WorkspaceCreateNestedOneWithoutTeamsInput
+    standupEntries?: StandupEntryCreateNestedManyWithoutTeamInput
   }
 
   export type TeamUncheckedCreateWithoutUsersInput = {
     id?: string
-    slackTeamId: string
-    name?: string | null
-    timezone?: string
-    channelId?: string | null
-    createdAt?: Date | string
-    entries?: StandupEntryUncheckedCreateNestedManyWithoutTeamInput
+    name: string
+    workspaceId: string
+    standupEntries?: StandupEntryUncheckedCreateNestedManyWithoutTeamInput
   }
 
   export type TeamCreateOrConnectWithoutUsersInput = {
@@ -7247,13 +9171,15 @@ export namespace Prisma {
     blockers?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
-    team: TeamCreateNestedOneWithoutEntriesInput
+    workspace: WorkspaceCreateNestedOneWithoutEntriesInput
+    team?: TeamCreateNestedOneWithoutStandupEntriesInput
   }
 
   export type StandupEntryUncheckedCreateWithoutUserInput = {
     id?: string
     date: Date | string
-    teamId: string
+    workspaceId: string
+    teamId?: string | null
     yesterday: string
     today: string
     blockers?: string | null
@@ -7270,6 +9196,39 @@ export namespace Prisma {
     data: StandupEntryCreateManyUserInput | StandupEntryCreateManyUserInput[]
   }
 
+  export type WorkspaceUpsertWithoutUsersInput = {
+    update: XOR<WorkspaceUpdateWithoutUsersInput, WorkspaceUncheckedUpdateWithoutUsersInput>
+    create: XOR<WorkspaceCreateWithoutUsersInput, WorkspaceUncheckedCreateWithoutUsersInput>
+    where?: WorkspaceWhereInput
+  }
+
+  export type WorkspaceUpdateToOneWithWhereWithoutUsersInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutUsersInput, WorkspaceUncheckedUpdateWithoutUsersInput>
+  }
+
+  export type WorkspaceUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackTeamId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    teams?: TeamUpdateManyWithoutWorkspaceNestedInput
+    entries?: StandupEntryUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutUsersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackTeamId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    teams?: TeamUncheckedUpdateManyWithoutWorkspaceNestedInput
+    entries?: StandupEntryUncheckedUpdateManyWithoutWorkspaceNestedInput
+  }
+
   export type TeamUpsertWithoutUsersInput = {
     update: XOR<TeamUpdateWithoutUsersInput, TeamUncheckedUpdateWithoutUsersInput>
     create: XOR<TeamCreateWithoutUsersInput, TeamUncheckedCreateWithoutUsersInput>
@@ -7283,22 +9242,16 @@ export namespace Prisma {
 
   export type TeamUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    slackTeamId?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    timezone?: StringFieldUpdateOperationsInput | string
-    channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    entries?: StandupEntryUpdateManyWithoutTeamNestedInput
+    name?: StringFieldUpdateOperationsInput | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutTeamsNestedInput
+    standupEntries?: StandupEntryUpdateManyWithoutTeamNestedInput
   }
 
   export type TeamUncheckedUpdateWithoutUsersInput = {
     id?: StringFieldUpdateOperationsInput | string
-    slackTeamId?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    timezone?: StringFieldUpdateOperationsInput | string
-    channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    entries?: StandupEntryUncheckedUpdateManyWithoutTeamNestedInput
+    name?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    standupEntries?: StandupEntryUncheckedUpdateManyWithoutTeamNestedInput
   }
 
   export type StandupEntryUpsertWithWhereUniqueWithoutUserInput = {
@@ -7324,7 +9277,8 @@ export namespace Prisma {
     displayName?: string | null
     streak?: number
     lastSubmit?: Date | string | null
-    team: TeamCreateNestedOneWithoutUsersInput
+    workspace: WorkspaceCreateNestedOneWithoutUsersInput
+    team?: TeamCreateNestedOneWithoutUsersInput
   }
 
   export type UserUncheckedCreateWithoutEntriesInput = {
@@ -7332,7 +9286,8 @@ export namespace Prisma {
     slackUserId: string
     realName?: string | null
     displayName?: string | null
-    teamId: string
+    workspaceId: string
+    teamId?: string | null
     streak?: number
     lastSubmit?: Date | string | null
   }
@@ -7342,29 +9297,50 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutEntriesInput, UserUncheckedCreateWithoutEntriesInput>
   }
 
-  export type TeamCreateWithoutEntriesInput = {
+  export type WorkspaceCreateWithoutEntriesInput = {
     id?: string
     slackTeamId: string
     name?: string | null
     timezone?: string
     channelId?: string | null
     createdAt?: Date | string
+    users?: UserCreateNestedManyWithoutWorkspaceInput
+    teams?: TeamCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceUncheckedCreateWithoutEntriesInput = {
+    id?: string
+    slackTeamId: string
+    name?: string | null
+    timezone?: string
+    channelId?: string | null
+    createdAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutWorkspaceInput
+    teams?: TeamUncheckedCreateNestedManyWithoutWorkspaceInput
+  }
+
+  export type WorkspaceCreateOrConnectWithoutEntriesInput = {
+    where: WorkspaceWhereUniqueInput
+    create: XOR<WorkspaceCreateWithoutEntriesInput, WorkspaceUncheckedCreateWithoutEntriesInput>
+  }
+
+  export type TeamCreateWithoutStandupEntriesInput = {
+    id?: string
+    name: string
+    workspace: WorkspaceCreateNestedOneWithoutTeamsInput
     users?: UserCreateNestedManyWithoutTeamInput
   }
 
-  export type TeamUncheckedCreateWithoutEntriesInput = {
+  export type TeamUncheckedCreateWithoutStandupEntriesInput = {
     id?: string
-    slackTeamId: string
-    name?: string | null
-    timezone?: string
-    channelId?: string | null
-    createdAt?: Date | string
+    name: string
+    workspaceId: string
     users?: UserUncheckedCreateNestedManyWithoutTeamInput
   }
 
-  export type TeamCreateOrConnectWithoutEntriesInput = {
+  export type TeamCreateOrConnectWithoutStandupEntriesInput = {
     where: TeamWhereUniqueInput
-    create: XOR<TeamCreateWithoutEntriesInput, TeamUncheckedCreateWithoutEntriesInput>
+    create: XOR<TeamCreateWithoutStandupEntriesInput, TeamUncheckedCreateWithoutStandupEntriesInput>
   }
 
   export type UserUpsertWithoutEntriesInput = {
@@ -7385,7 +9361,8 @@ export namespace Prisma {
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     streak?: IntFieldUpdateOperationsInput | number
     lastSubmit?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    team?: TeamUpdateOneRequiredWithoutUsersNestedInput
+    workspace?: WorkspaceUpdateOneRequiredWithoutUsersNestedInput
+    team?: TeamUpdateOneWithoutUsersNestedInput
   }
 
   export type UserUncheckedUpdateWithoutEntriesInput = {
@@ -7393,40 +9370,182 @@ export namespace Prisma {
     slackUserId?: StringFieldUpdateOperationsInput | string
     realName?: NullableStringFieldUpdateOperationsInput | string | null
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
-    teamId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
     streak?: IntFieldUpdateOperationsInput | number
     lastSubmit?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
-  export type TeamUpsertWithoutEntriesInput = {
-    update: XOR<TeamUpdateWithoutEntriesInput, TeamUncheckedUpdateWithoutEntriesInput>
-    create: XOR<TeamCreateWithoutEntriesInput, TeamUncheckedCreateWithoutEntriesInput>
-    where?: TeamWhereInput
+  export type WorkspaceUpsertWithoutEntriesInput = {
+    update: XOR<WorkspaceUpdateWithoutEntriesInput, WorkspaceUncheckedUpdateWithoutEntriesInput>
+    create: XOR<WorkspaceCreateWithoutEntriesInput, WorkspaceUncheckedCreateWithoutEntriesInput>
+    where?: WorkspaceWhereInput
   }
 
-  export type TeamUpdateToOneWithWhereWithoutEntriesInput = {
-    where?: TeamWhereInput
-    data: XOR<TeamUpdateWithoutEntriesInput, TeamUncheckedUpdateWithoutEntriesInput>
+  export type WorkspaceUpdateToOneWithWhereWithoutEntriesInput = {
+    where?: WorkspaceWhereInput
+    data: XOR<WorkspaceUpdateWithoutEntriesInput, WorkspaceUncheckedUpdateWithoutEntriesInput>
   }
 
-  export type TeamUpdateWithoutEntriesInput = {
+  export type WorkspaceUpdateWithoutEntriesInput = {
     id?: StringFieldUpdateOperationsInput | string
     slackTeamId?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     timezone?: StringFieldUpdateOperationsInput | string
     channelId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutWorkspaceNestedInput
+    teams?: TeamUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type WorkspaceUncheckedUpdateWithoutEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackTeamId?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    channelId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutWorkspaceNestedInput
+    teams?: TeamUncheckedUpdateManyWithoutWorkspaceNestedInput
+  }
+
+  export type TeamUpsertWithoutStandupEntriesInput = {
+    update: XOR<TeamUpdateWithoutStandupEntriesInput, TeamUncheckedUpdateWithoutStandupEntriesInput>
+    create: XOR<TeamCreateWithoutStandupEntriesInput, TeamUncheckedCreateWithoutStandupEntriesInput>
+    where?: TeamWhereInput
+  }
+
+  export type TeamUpdateToOneWithWhereWithoutStandupEntriesInput = {
+    where?: TeamWhereInput
+    data: XOR<TeamUpdateWithoutStandupEntriesInput, TeamUncheckedUpdateWithoutStandupEntriesInput>
+  }
+
+  export type TeamUpdateWithoutStandupEntriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    workspace?: WorkspaceUpdateOneRequiredWithoutTeamsNestedInput
     users?: UserUpdateManyWithoutTeamNestedInput
   }
 
-  export type TeamUncheckedUpdateWithoutEntriesInput = {
+  export type TeamUncheckedUpdateWithoutStandupEntriesInput = {
     id?: StringFieldUpdateOperationsInput | string
-    slackTeamId?: StringFieldUpdateOperationsInput | string
-    name?: NullableStringFieldUpdateOperationsInput | string | null
-    timezone?: StringFieldUpdateOperationsInput | string
-    channelId?: NullableStringFieldUpdateOperationsInput | string | null
-    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
     users?: UserUncheckedUpdateManyWithoutTeamNestedInput
+  }
+
+  export type UserCreateManyWorkspaceInput = {
+    id?: string
+    slackUserId: string
+    realName?: string | null
+    displayName?: string | null
+    teamId?: string | null
+    streak?: number
+    lastSubmit?: Date | string | null
+  }
+
+  export type TeamCreateManyWorkspaceInput = {
+    id?: string
+    name: string
+  }
+
+  export type StandupEntryCreateManyWorkspaceInput = {
+    id?: string
+    date: Date | string
+    userId: string
+    teamId?: string | null
+    yesterday: string
+    today: string
+    blockers?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type UserUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackUserId?: StringFieldUpdateOperationsInput | string
+    realName?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    streak?: IntFieldUpdateOperationsInput | number
+    lastSubmit?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    team?: TeamUpdateOneWithoutUsersNestedInput
+    entries?: StandupEntryUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackUserId?: StringFieldUpdateOperationsInput | string
+    realName?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    streak?: IntFieldUpdateOperationsInput | number
+    lastSubmit?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    entries?: StandupEntryUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    slackUserId?: StringFieldUpdateOperationsInput | string
+    realName?: NullableStringFieldUpdateOperationsInput | string | null
+    displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    streak?: IntFieldUpdateOperationsInput | number
+    lastSubmit?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  }
+
+  export type TeamUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    users?: UserUpdateManyWithoutTeamNestedInput
+    standupEntries?: StandupEntryUpdateManyWithoutTeamNestedInput
+  }
+
+  export type TeamUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    users?: UserUncheckedUpdateManyWithoutTeamNestedInput
+    standupEntries?: StandupEntryUncheckedUpdateManyWithoutTeamNestedInput
+  }
+
+  export type TeamUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+  }
+
+  export type StandupEntryUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    yesterday?: StringFieldUpdateOperationsInput | string
+    today?: StringFieldUpdateOperationsInput | string
+    blockers?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutEntriesNestedInput
+    team?: TeamUpdateOneWithoutStandupEntriesNestedInput
+  }
+
+  export type StandupEntryUncheckedUpdateWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    yesterday?: StringFieldUpdateOperationsInput | string
+    today?: StringFieldUpdateOperationsInput | string
+    blockers?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type StandupEntryUncheckedUpdateManyWithoutWorkspaceInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    date?: DateTimeFieldUpdateOperationsInput | Date | string
+    userId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
+    yesterday?: StringFieldUpdateOperationsInput | string
+    today?: StringFieldUpdateOperationsInput | string
+    blockers?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateManyTeamInput = {
@@ -7434,6 +9553,7 @@ export namespace Prisma {
     slackUserId: string
     realName?: string | null
     displayName?: string | null
+    workspaceId: string
     streak?: number
     lastSubmit?: Date | string | null
   }
@@ -7442,6 +9562,7 @@ export namespace Prisma {
     id?: string
     date: Date | string
     userId: string
+    workspaceId: string
     yesterday: string
     today: string
     blockers?: string | null
@@ -7456,6 +9577,7 @@ export namespace Prisma {
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
     streak?: IntFieldUpdateOperationsInput | number
     lastSubmit?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    workspace?: WorkspaceUpdateOneRequiredWithoutUsersNestedInput
     entries?: StandupEntryUpdateManyWithoutUserNestedInput
   }
 
@@ -7464,6 +9586,7 @@ export namespace Prisma {
     slackUserId?: StringFieldUpdateOperationsInput | string
     realName?: NullableStringFieldUpdateOperationsInput | string | null
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceId?: StringFieldUpdateOperationsInput | string
     streak?: IntFieldUpdateOperationsInput | number
     lastSubmit?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     entries?: StandupEntryUncheckedUpdateManyWithoutUserNestedInput
@@ -7474,6 +9597,7 @@ export namespace Prisma {
     slackUserId?: StringFieldUpdateOperationsInput | string
     realName?: NullableStringFieldUpdateOperationsInput | string | null
     displayName?: NullableStringFieldUpdateOperationsInput | string | null
+    workspaceId?: StringFieldUpdateOperationsInput | string
     streak?: IntFieldUpdateOperationsInput | number
     lastSubmit?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -7487,12 +9611,14 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutEntriesNestedInput
+    workspace?: WorkspaceUpdateOneRequiredWithoutEntriesNestedInput
   }
 
   export type StandupEntryUncheckedUpdateWithoutTeamInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
     yesterday?: StringFieldUpdateOperationsInput | string
     today?: StringFieldUpdateOperationsInput | string
     blockers?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7504,6 +9630,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
     userId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
     yesterday?: StringFieldUpdateOperationsInput | string
     today?: StringFieldUpdateOperationsInput | string
     blockers?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7514,7 +9641,8 @@ export namespace Prisma {
   export type StandupEntryCreateManyUserInput = {
     id?: string
     date: Date | string
-    teamId: string
+    workspaceId: string
+    teamId?: string | null
     yesterday: string
     today: string
     blockers?: string | null
@@ -7530,13 +9658,15 @@ export namespace Prisma {
     blockers?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    team?: TeamUpdateOneRequiredWithoutEntriesNestedInput
+    workspace?: WorkspaceUpdateOneRequiredWithoutEntriesNestedInput
+    team?: TeamUpdateOneWithoutStandupEntriesNestedInput
   }
 
   export type StandupEntryUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
     yesterday?: StringFieldUpdateOperationsInput | string
     today?: StringFieldUpdateOperationsInput | string
     blockers?: NullableStringFieldUpdateOperationsInput | string | null
@@ -7547,7 +9677,8 @@ export namespace Prisma {
   export type StandupEntryUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     date?: DateTimeFieldUpdateOperationsInput | Date | string
-    teamId?: StringFieldUpdateOperationsInput | string
+    workspaceId?: StringFieldUpdateOperationsInput | string
+    teamId?: NullableStringFieldUpdateOperationsInput | string | null
     yesterday?: StringFieldUpdateOperationsInput | string
     today?: StringFieldUpdateOperationsInput | string
     blockers?: NullableStringFieldUpdateOperationsInput | string | null

@@ -11,53 +11,67 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = "file:./test.db"
+}
+
+model Workspace {
+  id          String         @id @default(cuid())
+  slackTeamId String         @unique
+  name        String?
+  timezone    String         @default("Africa/Nairobi")
+  channelId   String? // default channel for digests
+  users       User[]
+  teams       Team[]
+  entries     StandupEntry[]
+  createdAt   DateTime       @default(now())
 }
 
 model Team {
-  id          String   @id @default(cuid())
-  slackTeamId String   @unique
-  name        String?
-  timezone    String   @default("Africa/Nairobi")
-  channelId   String?  // default channel for digests
-  users       User[]
-  entries     StandupEntry[]
-  createdAt   DateTime @default(now())
+  id             String         @id @default(cuid())
+  name           String // e.g. "Education", "TechOps"
+  workspaceId    String
+  workspace      Workspace      @relation(fields: [workspaceId], references: [id])
+  users          User[]
+  standupEntries StandupEntry[]
 }
 
 model User {
-  id          String   @id @default(cuid())
-  slackUserId String   @unique
+  id          String         @id @default(cuid())
+  slackUserId String         @unique
   realName    String?
   displayName String?
-  teamId      String
-  team        Team     @relation(fields: [teamId], references: [id])
-  streak      Int      @default(0)
+  workspaceId String
+  workspace   Workspace      @relation(fields: [workspaceId], references: [id])
+  teamId      String?
+  team        Team?          @relation(fields: [teamId], references: [id])
+  streak      Int            @default(0)
   lastSubmit  DateTime?
   entries     StandupEntry[]
 }
 
 model StandupEntry {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   date        DateTime // store as midnight team tz (normalized to UTC)
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
-  teamId      String
-  team        Team     @relation(fields: [teamId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+  teamId      String?
+  team        Team?     @relation(fields: [teamId], references: [id])
   yesterday   String
   today       String
   blockers    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model ParticipationSnapshot {
-  id       String   @id @default(cuid())
-  weekOf   DateTime // Monday 00:00 team tz (UTC normalized)
-  teamId   String
-  filled   Int
-  missing  Int
+  id            String   @id @default(cuid())
+  weekOf        DateTime // Monday 00:00 team tz (UTC normalized)
+  workspaceId   String
+  filled        Int
+  missing       Int
   streakLeaders Json // [{userId, name, streak}]
-  blockersTop    Json // [{term, count}]
-  createdAt DateTime @default(now())
+  blockersTop   Json // [{term, count}]
+  createdAt     DateTime @default(now())
 }
