@@ -740,7 +740,7 @@ app.command("/participation", async ({ body, ack, client }) => {
   }
 
   const users = await prisma.user.findMany({
-    where: { workspaceId: team.id },
+    where: { workspaceId: workspace.id },
   });
   const end = dayjs().utc().startOf("day");
   const start = end.subtract(days, "day");
@@ -749,7 +749,7 @@ app.command("/participation", async ({ body, ack, client }) => {
 
   const entries = await prisma.standupEntry.findMany({
     where: {
-      workspaceId: team.id,
+      workspaceId: workspace.id,
       date: {
         gte: start.toDate(),
         lt: end.toDate(),
