@@ -47,6 +47,7 @@ async function syncChannelUsers(prisma, workspace) {
     console.log("No standup channel configured, skipping user sync.");
     return;
   }
+  !workspace.botToken && console.log("No bot token for workspace", workspace.id);
   const client = new WebClient(workspace.botToken);
   let cursor;
   let total = 0;
