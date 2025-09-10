@@ -164,7 +164,7 @@ app.view("setup_modal", async ({ ack, body, view, client }) => {
   await ack();
 
   const channelId =
-    view.state.values.channel_block.channel_select.selected_conversation.id;
+    view.state.values.channel_block.channel_select.selected_conversation;
 
   const installerId = body.user.id;
   const workspaceId = body.team.id;
