@@ -164,10 +164,15 @@ app.view("setup_modal", async ({ ack, body, view, client }) => {
   await ack();
 
   const channelId =
-    view.state.values.channel_block.channel_select.selected_conversation;
+    view.state.values.channel_block.channel_select.selected_conversation.id;
 
   const installerId = body.user.id;
   const workspaceId = body.team.id;
+
+  await prisma.workspace.update({
+    where: { slackTeamId: workspaceId },
+    data: { channelId },
+  })
 
   const workspace = await prisma.workspace.findUnique({
     where: { slackTeamId: workspaceId }
