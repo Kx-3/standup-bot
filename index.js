@@ -40,6 +40,45 @@ function countWeekdays(start, end) {
   return count;
 }
 
+async function ensureTeam(prisma, app) {
+  const { team, team_id } = await app.client.auth.test();
+  return await prisma.workspace.findUnique({
+    where: { slackTeamId: team_id }
+  });
+}
+
+async function syncChannelUsers(prisma, app) {
+  const workspace = await ensureTeam(prisma, app);
+  const standupChannel = workspace.channelId;
+  if (!standupChannel) {
+    console.log("No standup channel configured, skipping user sync.");
+    return;
+  }
+  let cursor;
+  let total = 0;
+  do {
+    const res = await app.client.conversations.members({
+      channel: standupChannel,
+      cursor,
+      limit: 200,
+    });
+    for (const userId of res.members) {
+      if (userId.startsWith("B") || userId === "USLACKBOT") continue; // skip bots
+      const slackUser = await app.client.users.info({ user: userId });
+      if (slackUser.user?.is_bot || slackUser.user?.deleted) continue;
+      const realName = slackUser.user.profile.real_name || slackUser.user.name;
+      await prisma.user.upsert({
+        where: { slackUserId: userId },
+        update: { workspaceId: workspace.id, realName },
+        create: { slackUserId: userId, workspaceId: workspace.id, realName },
+      });
+      total++;
+    }
+    cursor = res.response_metadata?.next_cursor || undefined;
+  } while (cursor);
+  console.log(`✅ Synced ${total} users to database.`);
+}
+
 receiver.app.get("/slack/oauth_redirect", async (req, res) => {
   const { code } = req.query;
   if (!code) return res.status(400).send("No code provided");
@@ -138,10 +177,11 @@ app.view("setup_modal", async ({ ack, body, view, client }) => {
   const installerId = body.user.id;
   const workspaceId = body.team.id;
 
-  // Save this in your DB
   await prisma.workspace.findUnique({
     where: { slackTeamId: workspaceId }
   });
+
+  syncChannelUsers(prisma, app).catch(console.error);
 
   await client.chat.postMessage({
     channel: installerId,
@@ -772,41 +812,6 @@ app.command("/participation", async ({ body, ack, client }) => {
   });
 });
 
-async function ensureTeam(prisma, app) {
-  const { team, team_id } = await app.client.auth.test();
-  return await prisma.workspace.findUnique({
-    where: { slackTeamId: team_id }
-  });
-}
-
-async function syncChannelUsers(prisma, app) {
-  const standupChannel = process.env.DEFAULT_DIGEST_CHANNEL_ID;
-  const team = await ensureTeam(prisma, app);
-  let cursor;
-  let total = 0;
-  do {
-    const res = await app.client.conversations.members({
-      channel: standupChannel,
-      cursor,
-      limit: 200,
-    });
-    for (const userId of res.members) {
-      if (userId.startsWith("B") || userId === "USLACKBOT") continue; // skip bots
-      const slackUser = await app.client.users.info({ user: userId });
-      if (slackUser.user?.is_bot || slackUser.user?.deleted) continue;
-      const realName = slackUser.user.profile.real_name || slackUser.user.name;
-      await prisma.user.upsert({
-        where: { slackUserId: userId },
-        update: { workspaceId: team.id, realName },
-        create: { slackUserId: userId, workspaceId: team.id, realName },
-      });
-      total++;
-    }
-    cursor = res.response_metadata?.next_cursor || undefined;
-  } while (cursor);
-  console.log(`✅ Synced ${total} users to database.`);
-}
-syncChannelUsers(prisma, app).catch(console.error);
 cron.schedule("0 3 * * *", () => {
   syncChannelUsers(prisma, app).catch(console.error);
 });
