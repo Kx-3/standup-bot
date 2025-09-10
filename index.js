@@ -1,5 +1,6 @@
 require("dotenv").config();
 const { App, ExpressReceiver } = require("@slack/bolt");
+const { WebClient } = require("@slack/web-api");
 const { PrismaClient } = require("./generated/prisma");
 const express = require("express");
 const dayjs = require("dayjs");
@@ -46,10 +47,11 @@ async function syncChannelUsers(prisma, workspace) {
     console.log("No standup channel configured, skipping user sync.");
     return;
   }
+  const client = new WebClient(workspace.botToken);
   let cursor;
   let total = 0;
   do {
-    const res = await app.client.conversations.members({
+    const res = await client.conversations.members({
       channel: standupChannel,
       cursor,
       limit: 200,
