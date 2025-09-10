@@ -139,15 +139,8 @@ app.view("setup_modal", async ({ ack, body, view, client }) => {
   const workspaceId = body.team.id;
 
   // Save this in your DB
-  await prisma.workspace.upsert({
-    where: { slackTeamId: workspaceId },
-    create: {
-      slackTeamId: workspaceId,
-      channelId: channelId,
-    },
-    update: {
-      channelId: channelId,
-    },
+  await prisma.workspace.findUnique({
+    where: { slackTeamId: workspaceId }
   });
 
   await client.chat.postMessage({
@@ -204,14 +197,8 @@ function isNextWeekday(last, current) {
 }
 
 async function openStandupModal(client, trigger_id, slackTeamId, slackUserId) {
-  let workspace = await prisma.workspace.upsert({
-    where: { slackTeamId },
-    update: {},
-    create: {
-      slackTeamId,
-      name: slackTeamId,
-      timezone: process.env.DEFAULT_TEAM_TZ,
-    },
+  let workspace = await prisma.workspace.findUnique({
+    where: { slackTeamId }
   });
   let user = await prisma.user.upsert({
     where: { slackUserId },
@@ -354,14 +341,8 @@ app.view("team_selection_modal", async ({ ack, body, view, client }) => {
   const selectedTeam =
     view.state.values.team_block.team_select.selected_option.value;
 
-  const workspace = await prisma.workspace.upsert({
-    where: { slackTeamId },
-    update: {},
-    create: {
-      slackTeamId,
-      name: slackTeamId,
-      timezone: process.env.DEFAULT_TEAM_TZ,
-    },
+  const workspace = await prisma.workspace.findUnique({
+    where: { slackTeamId }
   });
 
   let team = await prisma.team.findFirst({
@@ -793,14 +774,8 @@ app.command("/participation", async ({ body, ack, client }) => {
 
 async function ensureTeam(prisma, app) {
   const { team, team_id } = await app.client.auth.test();
-  return await prisma.workspace.upsert({
-    where: { slackTeamId: team_id },
-    update: { name: team },
-    create: {
-      slackTeamId: team_id,
-      name: team,
-      timezone: process.env.DEFAULT_TEAM_TZ,
-    },
+  return await prisma.workspace.findUnique({
+    where: { slackTeamId: team_id }
   });
 }
 
