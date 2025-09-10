@@ -40,15 +40,7 @@ function countWeekdays(start, end) {
   return count;
 }
 
-async function ensureTeam(prisma, app) {
-  const { team, team_id } = await app.client.auth.test();
-  return await prisma.workspace.findUnique({
-    where: { slackTeamId: team_id }
-  });
-}
-
-async function syncChannelUsers(prisma, app) {
-  const workspace = await ensureTeam(prisma, app);
+async function syncChannelUsers(prisma, workspace) {
   const standupChannel = workspace.channelId;
   if (!standupChannel) {
     console.log("No standup channel configured, skipping user sync.");
@@ -177,11 +169,11 @@ app.view("setup_modal", async ({ ack, body, view, client }) => {
   const installerId = body.user.id;
   const workspaceId = body.team.id;
 
-  await prisma.workspace.findUnique({
+  const workspace = await prisma.workspace.findUnique({
     where: { slackTeamId: workspaceId }
   });
 
-  syncChannelUsers(prisma, app).catch(console.error);
+  syncChannelUsers(prisma, workspace).catch(console.error);
 
   await client.chat.postMessage({
     channel: installerId,
