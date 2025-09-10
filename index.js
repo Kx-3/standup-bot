@@ -392,7 +392,7 @@ app.view("submit_standup", async ({ ack, body, view, client }) => {
 
   const y = view.state.values["y"]["y_i"].value.trim();
   const t = view.state.values["t"]["t_i"].value.trim();
-  const b = view.state.values["b"]?.["b_i"]?.value.trim() || "";
+  const b = view.state.values["b"]?.["b_i"]?.value?.trim() || "";
 
   await prisma.standupEntry.upsert({
     where: {
