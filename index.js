@@ -59,7 +59,7 @@ async function syncChannelUsers(prisma, workspace) {
     });
     for (const userId of res.members) {
       if (userId.startsWith("B") || userId === "USLACKBOT") continue; // skip bots
-      const slackUser = await app.client.users.info({ user: userId });
+      const slackUser = await client.users.info({ user: userId });
       if (slackUser.user?.is_bot || slackUser.user?.deleted) continue;
       const realName = slackUser.user.profile.real_name || slackUser.user.name;
       await prisma.user.upsert({
