@@ -364,7 +364,7 @@ app.view("team_selection_modal", async ({ ack, body, view, client }) => {
       slackUserId,
       teamId: team.id,
       realName: body.user.name,
-      workspaceId: slackTeamId,
+      workspaceId: workspace.id,
     },
   });
 
