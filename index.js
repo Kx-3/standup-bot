@@ -23,7 +23,10 @@ const app = new App({
       where: { slackTeamId: teamId },
     });
     if (!workspace || !workspace.botToken) {
-      throw new Error("Workspace not found or bot token missing");
+      console.warn(`No workspace found for teamId ${teamId}`)
+      return {
+        botToken: process.env.SLACK_BOT_TOKEN
+      }
     }
     return {
       botToken: workspace.botToken,
