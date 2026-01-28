@@ -580,6 +580,7 @@ cron.schedule(
     for (const workspace of workspaces) {
       const client = new App({
         token: workspace.botToken,
+        signingSecret: process.env.SLACK_SIGNING_SECRET,
       }).client;
       const entries = await prisma.standupEntry.findMany({
         where: {
@@ -675,6 +676,7 @@ cron.schedule(
       const start = end.subtract(7, "day");
       const client = new App({
         token: workspace.botToken,
+        signingSecret: process.env.SLACK_SIGNING_SECRET,
       }).client;
       const entries = await prisma.standupEntry.findMany({
         where: {
