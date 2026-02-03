@@ -572,6 +572,9 @@ cron.schedule(
   "0 17 * * 1-5",
   async () => {
     console.log("⏰ Running daily stand-up summary...");
+    const tz = workspace.timezone || process.env.DEFAULT_TEAM_TZ;
+    const todayTz = dayjs().tz?.(tz) ?? dayjs();
+    const tomorrowTz = todayTz.add(1, "day")
 
     const todayUTC = dayjs().utc().startOf("day");
     const tomorrowUTC = todayUTC.add(1, "day");
@@ -586,8 +589,8 @@ cron.schedule(
         where: {
           workspaceId: workspace.id,
           date: {
-            gte: todayUTC.toDate(),
-            lt: tomorrowUTC.toDate(),
+            gte: todayTz.toDate(),
+            lt: tomorrowTz.toDate(),
           },
         },
         include: { user: true },
