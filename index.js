@@ -589,18 +589,21 @@ cron.schedule(
         where: {
           workspaceId: workspace.id,
           date: {
-            gte: todayTz.toDate(),
-            lt: tomorrowTz.toDate(),
+            gte: todayUTC.toDate(),
+            lt: tomorrowUTC.toDate(),
           },
         },
         include: { user: true },
       });
       if (entries.length === 0) {
-        await client.chat.postMessage({
-          channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
-          text: "No stand-up entries were submitted today.",
-        });
-        return;
+        const channel = workspace.channelId || process.env.DEFAULT_DIGEST_CHANNEL_ID;
+        if (channel) {
+          await client.chat.postMessage({
+            channel,
+            text: "No stand-up entries were submitted today.",
+          });
+        }
+        continue;
       }
 
       const summaryBlocks = [];
