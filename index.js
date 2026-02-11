@@ -572,15 +572,15 @@ cron.schedule(
   "0 17 * * 1-5",
   async () => {
     console.log("⏰ Running daily stand-up summary...");
-    const tz = workspace.timezone || process.env.DEFAULT_TEAM_TZ;
-    const todayTz = dayjs().tz?.(tz) ?? dayjs();
-    const tomorrowTz = todayTz.add(1, "day")
-
     const todayUTC = dayjs().utc().startOf("day");
     const tomorrowUTC = todayUTC.add(1, "day");
 
     const workspaces = await prisma.workspace.findMany();
     for (const workspace of workspaces) {
+      const tz = workspace.timezone || process.env.DEFAULT_TEAM_TZ;
+      const todayTz = dayjs().tz?.(tz) ?? dayjs();
+      const tomorrowTz = todayTz.add(1, "day")
+
       const client = new App({
         token: workspace.botToken,
         signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -589,21 +589,18 @@ cron.schedule(
         where: {
           workspaceId: workspace.id,
           date: {
-            gte: todayUTC.toDate(),
-            lt: tomorrowUTC.toDate(),
+            gte: todayTz.toDate(),
+            lt: tomorrowTz.toDate(),
           },
         },
         include: { user: true },
       });
       if (entries.length === 0) {
-        const channel = workspace.channelId || process.env.DEFAULT_DIGEST_CHANNEL_ID;
-        if (channel) {
-          await client.chat.postMessage({
-            channel,
-            text: "No stand-up entries were submitted today.",
-          });
-        }
-        continue;
+        await client.chat.postMessage({
+          channel: process.env.DEFAULT_DIGEST_CHANNEL_ID,
+          text: "No stand-up entries were submitted today.",
+        });
+        return;
       }
 
       const summaryBlocks = [];
